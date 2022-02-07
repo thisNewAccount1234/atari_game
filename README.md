@@ -4,11 +4,17 @@ Repository for Atari 2600 game.
 ## Possible Game Names
 
 The Kenosha Kid
+
 The Kenosha Kid: Rittenhouse vs. BLM
+
 The Kenosha Kid: Rittenhouse vs. Antifa
+
 Kyle Rittenhouse
+
 Rittenhouse
+
 St. Rittenhouse
+
 St. Rittenhouse of Kenosha
 
 ## Description
