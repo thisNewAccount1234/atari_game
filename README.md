@@ -3,25 +3,28 @@ Repository for Atari 2600 game.
 
 ## Possible Game Names
 
-The Kenosha Kid
+The Knsh. Kid
 
-The Kenosha Kid: Rittenhouse vs. BLM
+The Knsh. Kid: R. vs. BLM
 
-The Kenosha Kid: Rittenhouse vs. Antifa
+The Knsh. Kid: R. vs. Antifa
 
-Kyle Rittenhouse
+K. R.
 
-Rittenhouse
+R.
 
-St. Rittenhouse
+St. R.
 
-St. Rittenhouse of Kenosha
+St. R. of K.
 
 ## Game Description
-Atari 2600 game based on Kyle Rittenhouse where the player is Rittenhouse who has to save Kenosha by shooting looters and arsonists.
+Atari 2600 game based on K. R. where the player is R. who has to save Knsh. by shooting looters and arsonists.
 
 
 ## Links
+
+6502 instructions:
+http://6502.org/tutorials/6502opcodes.html
 
 Atari emulator for the browser:
 https://8bitworkshop.com/v3.9.0/?file=examples%2Fvsync.a&platform=vcs
