@@ -17,7 +17,7 @@ St. Rittenhouse
 
 St. Rittenhouse of Kenosha
 
-## Description
+## Game Description
 Atari 2600 game based on Kyle Rittenhouse where the player is Rittenhouse who has to save Kenosha by shooting looters and arsonists.
 
 
