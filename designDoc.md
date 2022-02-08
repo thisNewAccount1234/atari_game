@@ -8,13 +8,13 @@ The enemy, using player1 sprite, moves randomly and if it collides with a part o
 
 The player must shoot the enemy to prevent it from destroying buildings, if all buildings are destroyed the game is over.  Also, if the enemy collides with the player the game is over.
 
-The player will proceed to subsequent levels when the enemy is killed.  The score board is used to capture either a) the level or b) player0 score is number of enemies killed and player1 score is number of buildings destroyed.
+The player will proceed to subsequent levels when the enemy is killed.  Subsequent levels have an enemy that moves faster, possibly copies of sprite1 (?)  The score board is used to capture either a) the level or b) player0 score is number of enemies killed and player1 score is number of buildings destroyed.
 
 ## Alternate Game Concepts
 
 List alternate concepts here.
 
-## Ideas, Question, To Do
+## Ideas, Questions, To Do
 
 Learn how to draw and animate any sprite, start with fire
 
@@ -52,4 +52,22 @@ Make gave over screen, transfer from game to game over screen on loss conditions
 
 Is it posible to win?
 
+Is it possible to have multiple copies of player1 for many enemies at once?
 
+Sound?  Simple sounds for foot steps, and/or gun shots, and/or building attacks.  
+
+Music?
+
+## Possible Road Map
+
+Start with simply being able to draw, position, and move basic sprite with joystick.
+
+Build background/playfield, ensure sprite is kept within it.
+
+Once a sprite can be moved, add another sprite which is controlled by the computer, moves randomly.
+
+Add ability to fire missle from player sprite.
+
+Detect collision with missle and computer sprite, remove player sprite as a result.
+
+If score is desired, add a score and increment when player shoots sprite.
