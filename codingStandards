@@ -6,10 +6,11 @@ Coding Standards
 4.  In main loop, first vertical blank then horizontal blank.
 5.  Overscan at the end of main loop, along with program reset and interrupt vector words.
 6.  Visible scanlines should be in section named as such.
-7.  Use subroutines at least for horiztonal positioning.
-8.  No use of REPEAT macro because it uses up memory, use loop instead for more than 6 repeated lines
-9.  All labels use lowercase except for constants, which are all uppercase (or do we want sections to be capitalized and camel case?)
-10. Comments for every block (offest some set distance from the opcodes? say line 20?)
-11. Section labels no indentation, opcodes one tab or n spaces indented (how many spaces per tab?)
-12. Hexadecimal all uppercase (or lowercase?).  
-13. File naming standards (all lowercase, camel case, uppercase?).
+7.  Next background color, then playfield color and layout.
+8.  Use subroutines at least for horiztonal positioning.
+9.  No use of REPEAT macro because it uses up memory, use loop instead for more than 6 repeated lines
+10.  All labels use lowercase except for constants, which are all uppercase (or do we want sections to be capitalized and camel case?)
+11. Comments for every block (offest some set distance from the opcodes? say line 20?)
+12. Section labels no indentation, opcodes one tab or n spaces indented (how many spaces per tab?)
+13. Hexadecimal all uppercase (or lowercase?).  
+14. File naming standards (all lowercase, camel case, uppercase?).
