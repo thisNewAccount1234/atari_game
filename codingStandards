@@ -13,5 +13,5 @@ Coding Standards
 11. Comments for every block starting a column 20.
 12. Section labels no indentation, opcodes one tab or 5 spaces indented (how many spaces per tab?)
 13. Hexadecimal all uppercase.  
-14. File naming standards camel case.
+14. File names all camel case except README.md.
 15. Sprite bitmaps at the end of ROM, just before program reset and interrupt vector words.
