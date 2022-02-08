@@ -5,9 +5,7 @@ Repository for Atari 2600 game.
 
 The Knsh. Kid
 
-The Knsh. Kid: R. vs. BLM
-
-The Knsh. Kid: R. vs. Antifa
+The Knsh. Kid: R. vs. A.
 
 K. R.
 
