@@ -71,3 +71,5 @@ Add ability to fire missle from player sprite.
 Detect collision with missle and computer sprite, remove player sprite as a result.
 
 If score is desired, add a score and increment when player shoots sprite.
+
+todo: add more comprehensive road map/plan once design finalized
