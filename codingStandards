@@ -11,7 +11,7 @@ Coding Standards
 9.  No use of REPEAT macro because it uses up memory, use loop instead for more than 6 repeated lines.
 10. All labels use camel case except for constants, which are all uppercase.
 11. Comments for every block starting a column 20.
-12. Section labels no indentation, opcodes one tab or 5 spaces indented (how many spaces per tab?)
+12. Section labels no indentation, opcodes one tab or 5 spaces indented.
 13. Hexadecimal all uppercase.  
 14. File names all camel case except README.md.
 15. Sprite bitmaps at the end of ROM, just before program reset and interrupt vector words.
