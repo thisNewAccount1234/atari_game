@@ -48,13 +48,13 @@ Score?  Increment under various conditions
 
 Make a simple title screen, draw better one later, transfer from title to game
 
-Make gave over screen, transfer from game to game over screen on loss conditions
+Make game over screen, transfer from game to game over screen on lose conditions
 
 Is it posible to win?
 
 Is it possible to have multiple copies of player1 for many enemies at once?
 
-Sound?  Simple sounds for foot steps, and/or gun shots, and/or building attacks.  
+Sound?  Simple sounds for foot steps, and/or gun shots, and/or building attacks.
 
 Music?
 
