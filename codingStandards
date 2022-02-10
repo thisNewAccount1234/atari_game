@@ -15,6 +15,3 @@ Coding Standards
 13. Hexadecimal all uppercase.  
 14. File names all camel case except README.md.
 15. Sprite bitmaps at the end of ROM, just before program reset and interrupt vector words.
-
---- on new branch
-
