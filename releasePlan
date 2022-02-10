@@ -1,0 +1,33 @@
+
+Release Plan:
+
+Release 1:
+Very simple playfield, just a few simple single color blocks
+Player sprite, very simple, just a single color block
+Player sprite can move from joystick input, vertically and horizontally
+Enemy sprite, single color block, just moves randomly vertically and horizontally
+No collisions detected yet
+
+Release 2:
+Add more to playfield, make it look like city with buildings
+Add bitmaps and colors for player and enemy, no animation yet
+Detect collisions between enemy and building, building has simple block sprite added to it, placeholder for fire, if hit
+Detect collisions between enemy and player, player disappears if hit
+
+Release 3:
+Add walking animation to player and enemy, i.e. multiple bitmaps, cycle through them if moving
+Add animation to fire
+Add missile to player from joystick button
+Detect collisions between missile and enemy, enemy disappears if hit
+
+Release 4:
+Add title screen that shows for a few seconds then goes to game, i.e. place to reset to
+Add game end conditions, i.e. player dead, all buildings attacked, resets back to title screen
+Respawn enemy, when one is killed another shows up
+
+Release 5:
+Add simple sounds for collisions
+Improve graphics
+Improve "AI", i.e. the random movements of enemy
+Add score?
+Add levels?
