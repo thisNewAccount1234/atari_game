@@ -1,6 +1,9 @@
 
 Release Plan:
 
+Release 0:
+Very basic game kernel with the necessary sections for setup, reset, and scan lines
+
 Release 1:
 Very simple playfield, just a few simple single color blocks
 Player sprite, very simple, just a single color block
