@@ -1,0 +1,42 @@
+idea for random enemy movement
+
+every n frames:
+
+	get player's x and y position (using player input as a source of noise as it will be different every time)
+	XOR x and y position to get random byte seed
+	use seed to generate random byte, use random byte to determine enemy x and y movement for n frames, as follows:
+	
+		e.g. random byte: 1011 0101
+		
+		     1 0 1 1  0 1 0 1 	
+		     _ _ _ _  _ _ _ _
+		bit: 7 6 5 4  3 2 1 0
+		        x        y
+	   	
+	   	byte broken into two halves (nibbles), x and y
+	   	most significant bit of each nibble, bit 7 and bit 3, refer to the sign of x and y movement, i.e. negative or positive x and y	
+	   	the next most significant bit of each nibble, bit 6 and bit 2, refer to one of two states, fast movement or slow movement
+	   	the remaning two bits for each refer to how long this movement will occur, how many "steps" in x and y
+	   	n is calculated by the max of x and y steps, perhaps then multiplied by some constant
+	   	
+	   	using the example above:
+	   	
+	   		x (1011): 
+	   			movement will be negative, i.e. to the left screen (1xxx) 
+	   			movement will be slow, i.e. decrementing x by a small amount each step (x0xx) 
+	   			movement will happen for 3 "steps" (xx11)
+   			y (0101):
+   				movement will be positive, i.e. to the bottom of the screen (0xxx) 
+	   			movement will be fast, i.e. incrementing y by a large amount each step (x1xx) 
+	   			movement will happen for 1 "steps" (xx01)
+	   			
+		this will happen for 3 frames because max(3, 1) = 3, or if that's too fast 3 * z where z is some constant multiplier so that the enemy moves at a given tack for a while
+		if z is too small the enemy may appear to just vibrate in place, tending to jiggle around the same general area instead of moving around the entire screen 
+		perhaps z may not be a constant and could also change randomly
+   			
+   		in the example above, if the enemy was in the center of the screen, then once starting to move it would go slowly to the left and quickly down, i.e. steep diagonal trajectory to SW corner
+   		this would occur for 1 "step" (whatever that is, say z = 15 then that's 1 * 15 = 15 frames) at which point since y's step is over y movement goes to 0
+   		x's movement had 3 steps, one is already used, so x continues for 2 more steps, so slowly to the left for 2 * 15 = 30 more frames
+   		this is a total of 45 frames, because z = 15 and max(3, 1) = 3 so 3 * 15 = 45, once finished, regenerate random seed and calculate new enemy trajectory 
+   		
+   		 
