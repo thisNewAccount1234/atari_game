@@ -140,11 +140,27 @@ CheckP0Up:
 CheckP0Down:
     lda #%00100000          
     bit SWCHA
-    bne EndInputCheck          
+    bne CheckP0Left          
     dec KyleYPos
     lda #0
     sta KyleOffset             ; check if joystick down is pressed, if so decrement y position, else fall through to end checks
 
+CheckP0Left:
+    lda #%01000000
+    bit SWCHA
+    bne CheckP0Right
+    dec KyleXPos
+    lda #0
+    sta KyleOffset             ; check if joystick down is pressed, if so decrement y position, else fall through to end checks
+
+CheckP0Right:
+    lda #%10000000
+    bit SWCHA
+    bne EndInputCheck
+    inc KyleXPos
+    lda #0
+    sta KyleOffset             ; check if joystick down is pressed, if so decrement y position, else fall through to end checks
+    
 EndInputCheck:
 
 ; end of main loop, jump back to start 
