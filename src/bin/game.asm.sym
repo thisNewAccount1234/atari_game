@@ -13,6 +13,8 @@ AUDF1                    0018
 AUDV0                    0019                  
 AUDV1                    001a                  
 CheckP0Down              f081              (R )
+CheckP0Left              f08e              (R )
+CheckP0Right             f09b              (R )
 CheckP0Up                f074                  
 COLUBK                   0009              (R )
 COLUP0                   0006              (R )
@@ -28,19 +30,20 @@ CXM1P                    0001
 CXP0FB                   0002                  
 CXP1FB                   0003                  
 CXPPMM                   0007                  
+DivideLoop               f0b1              (R )
 ENABL                    001f                  
 ENAM0                    001d                  
 ENAM1                    001e                  
-EndInputCheck            f08e              (R )
+EndInputCheck            f0a8              (R )
 GameVisibleLine          f03c                  
 GRP0                     001b              (R )
 GRP1                     001c                  
 HMBL                     0024                  
-HMCLR                    002b                  
+HMCLR                    002b              (R )
 HMM0                     0022                  
 HMM1                     0023                  
-HMOVE                    002a                  
-HMP0                     0020                  
+HMOVE                    002a              (R )
+HMP0                     0020              (R )
 HMP1                     0021                  
 INPT0                    0008                  
 INPT1                    0009                  
@@ -50,10 +53,10 @@ INPT4                    000c
 INPT5                    000d                  
 INTIM                    0284                  
 KYLE_HEIGHT              0009              (R )
-KyleColor                f09a              (R )
+KyleColor                f0cf              (R )
 KyleColorPtr             0084              (R )
 KyleOffset               0086              (R )
-KyleSprite               f091              (R )
+KyleSprite               f0c6              (R )
 KyleSpritePtr            0082              (R )
 KyleXPos                 0080              (R )
 KyleYPos                 0081              (R )
@@ -70,7 +73,7 @@ RESM0                    0012
 RESM1                    0013                  
 RESMP0                   0028                  
 RESMP1                   0029                  
-RESP0                    0010                  
+RESP0                    0010              (R )
 RESP1                    0011                  
 RSYNC                    0003                  
 StartFrame               f023              (R )

@@ -162,7 +162,34 @@ CheckP0Right:
     sta KyleOffset             ; check if joystick down is pressed, if so decrement y position, else fall through to end checks
     
 EndInputCheck:
+;-----------------------------------------------------------------------------------------------------------------------------
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Set player horizontal position while in VBLANK
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    lda KyleXPos     ; load register A with desired X position
+    and #$7F       ; same as AND 01111111, forces bit 7 to zero
+                   ; keeping the result positive
+
+    sec            ; set carry flag before subtraction
+
+    sta WSYNC      ; wait for next scanline
+    sta HMCLR      ; clear old horizontal position values
+
+DivideLoop:
+    sbc #15        ; Subtract 15 from A
+    bcs DivideLoop ; loop while carry flag is still set
+
+    eor #7         ; adjust the remainder in A between -8 and 7
+    asl            ; shift left by 4, as HMP0 uses only 4 bits
+    asl
+    asl
+    asl
+    sta HMP0       ; set smooth position value
+    sta RESP0      ; fix rough position
+    sta WSYNC      ; wait for next scanline
+    sta HMOVE      ; apply the fine position offset
+;-------------------------------------------------------------------------------------------------------------------------------
 ; end of main loop, jump back to start 
 
     jmp StartFrame           
