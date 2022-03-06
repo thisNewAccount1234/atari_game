@@ -389,7 +389,7 @@
       8  0000 ????
       9  0000 ????						; declare the variables starting from memory address $80
      10  0000 ????
-     11 U0087 ????				      seg.u	Variables
+     11 U0089 ????				      seg.u	Variables
      12 U0080					      org	$80
      13 U0080
      14 U0080		       00	   KyleXPos   byte.b
@@ -397,17 +397,20 @@
      16 U0082		       00 00	   KyleSpritePtr word.w
      17 U0084		       00 00	   KyleColorPtr word.w
      18 U0086		       00	   KyleOffset byte.b
-     19 U0087
-     20 U0087							; define constants
-     21 U0087
-     22 U0087		       00 09	   KYLE_HEIGHT =	9
-     23 U0087
-     24 U0087							; start our ROM code at memory address $F000
-     25 U0087
-     26  10000 ????				       seg	Code
-     27  f000					      org	$F000
-     28  f000
-     29  f000				   Reset
+     19 U0087		       00	   SavedXPos  byte.b
+     20 U0088		       00	   SavedYPos  byte.b		; saved x and y positions for Kyle and enemy	
+     21 U0089
+     22 U0089							; define constants
+     23 U0089
+     24 U0089		       00 09	   KYLE_HEIGHT =	9
+     25 U0089		       00 12	   BUILDING_HEIGHT =	18
+     26 U0089
+     27 U0089							; start our ROM code at memory address $F000
+     28 U0089
+     29  10000 ????				       seg	Code
+     30  f000					      org	$F000
+     31  f000
+     32  f000				   Reset
       0  f000					      CLEAN_START
       1  f000		       78		      sei
       2  f001		       d8		      cld
@@ -420,198 +423,238 @@
       9  f008		       48		      pha
      10  f009		       d0 fb		      bne	.CLEAR_STACK
      11  f00b
-     31  f00b
-     32  f00b
-     33  f00b							; inititialize variables
      34  f00b
-     35  f00b		       a9 32		      lda	#50
-     36  f00d		       85 80		      sta	KyleXPos
-     37  f00f		       a9 3c		      lda	#60
-     38  f011		       85 81		      sta	KyleYPos	; set Kyle x and y
-     39  f013
-     40  f013		       a9 c6		      lda	#<KyleSprite
-     41  f015		       85 82		      sta	KyleSpritePtr
-     42  f017		       a9 f0		      lda	#>KyleSprite
-     43  f019		       85 83		      sta	KyleSpritePtr+1	; set low and high bytes of the sprite bitmap of Kyle sprite pointer
-     44  f01b
-     45  f01b		       a9 cf		      lda	#<KyleColor
-     46  f01d		       85 84		      sta	KyleColorPtr
-     47  f01f		       a9 f0		      lda	#>KyleColor
-     48  f021		       85 85		      sta	KyleColorPtr+1	; set low and high bytes of the color bitmap of Kyle color pointer
-     49  f023
-     50  f023
-     51  f023							; main loop
-     52  f023
-     53  f023				   StartFrame
-     54  f023
-     55  f023							; display VSYNC and VBLANK
-     56  f023
-     57  f023		       a9 02		      lda	#2
-     58  f025		       85 01		      sta	VBLANK	; turn on VBLANK
-     59  f027		       85 00		      sta	VSYNC	; turn on VSYNC
-     60  f029
-     61  f029		       85 02		      sta	WSYNC
-     62  f02b		       85 02		      sta	WSYNC
-     63  f02d		       85 02		      sta	WSYNC
-     64  f02f
-     65  f02f		       a9 00		      lda	#0
-     66  f031		       85 00		      sta	VSYNC	; turn off VSYNC
-     67  f033
-     68  f033		       a0 25		      ldy	#37
-     69  f035				   .VBlankLoop
-     70  f035		       85 02		      sta	WSYNC
-     71  f037		       88		      dey
-     72  f038		       d0 fb		      bne	.VBlankLoop
-     73  f03a
-     74  f03a		       85 01		      sta	VBLANK	; turn off VBLANK
-     75  f03c
-     76  f03c
-     77  f03c							; display scanlines of game
-     78  f03c
-     79  f03c				   GameVisibleLine
-     80  f03c		       a9 00		      lda	#$0
-     81  f03e		       85 09		      sta	COLUBK	; set background to black
-     82  f040
-     83  f040		       a2 60		      ldx	#96	; x counts the number of remaining scanlines
-     84  f042
-     85  f042				   .GameLineLoop
-     86  f042
-     87  f042				   .InsideKyleSprite
-     88  f042		       8a		      txa
-     89  f043		       38		      sec
-     90  f044		       e5 81		      sbc	KyleYPos
-     91  f046		       c5 09		      cmp	KYLE_HEIGHT
-     92  f048		       90 02		      bcc	.DrawSpriteP0
-     93  f04a		       a9 00		      lda	#0	; save a, set carry flag, subtract Kyle position, compare with height, jump to draw if within bounds
-     94  f04c
-     95  f04c				   .DrawSpriteP0
-     96  f04c		       18		      clc
-     97  f04d		       65 86		      adc	KyleOffset
-     98  f04f		       a8		      tay
-     99  f050		       b1 82		      lda	(KyleSpritePtr),Y
-    100  f052		       85 02		      sta	WSYNC
-    101  f054		       85 1b		      sta	GRP0
-    102  f056		       b1 84		      lda	(KyleColorPtr),Y
-    103  f058		       85 06		      sta	COLUP0	; get offset into y, jump to bitmap location for sprite plus y, load player register, jump to color location plus y, load color 
-    104  f05a
-    105  f05a		       85 02		      sta	WSYNC
-    106  f05c
-    107  f05c		       ca		      dex
-    108  f05d		       d0 e3		      bne	.GameLineLoop	; decrement x, if not zero jump back up to GameLineLoop
-    109  f05f
-    110  f05f		       a9 00		      lda	#0
-    111  f061		       85 86		      sta	KyleOffset	; reset Kyle offset
-    112  f063
-    113  f063		       85 02		      sta	WSYNC
-    114  f065
-    115  f065							; dsplay overscan
-    116  f065
-    117  f065		       a9 02		      lda	#2
-    118  f067		       85 01		      sta	VBLANK	; turn on VBLANK again
-    119  f069
-    120  f069		       a0 25		      ldy	#37
-    121  f06b				   .OverScanLoop
-    122  f06b		       85 02		      sta	WSYNC
-    123  f06d		       88		      dey
-    124  f06e		       d0 fb		      bne	.OverScanLoop
-    125  f070
-    126  f070		       a9 00		      lda	#0
-    127  f072		       85 01		      sta	VBLANK	; turn off VBLANK
-    128  f074
-    129  f074
-    130  f074							; check joystick
-    131  f074
-    132  f074				   CheckP0Up
-    133  f074		       a9 10		      lda	#%00010000
-    134  f076		       2c 80 02 	      bit	SWCHA
-    135  f079		       d0 06		      bne	CheckP0Down
-    136  f07b		       e6 81		      inc	KyleYPos
-    137  f07d		       a9 00		      lda	#0
-    138  f07f		       85 86		      sta	KyleOffset	; check if joystick up is pressed, if so increment y position, else fall through to next check
-    139  f081
-    140  f081				   CheckP0Down
-    141  f081		       a9 20		      lda	#%00100000
-    142  f083		       2c 80 02 	      bit	SWCHA
-    143  f086		       d0 06		      bne	CheckP0Left
-    144  f088		       c6 81		      dec	KyleYPos
+     35  f00b
+     36  f00b							; inititialize variables
+     37  f00b
+     38  f00b		       a9 32		      lda	#50
+     39  f00d		       85 80		      sta	KyleXPos
+     40  f00f		       85 87		      sta	SavedXPos
+     41  f011		       a9 3c		      lda	#60
+     42  f013		       85 81		      sta	KyleYPos
+     43  f015		       85 88		      sta	SavedYPos	; set Kyle x and y
+     44  f017
+     45  f017		       a9 fe		      lda	#<KyleSprite
+     46  f019		       85 82		      sta	KyleSpritePtr
+     47  f01b		       a9 f0		      lda	#>KyleSprite
+     48  f01d		       85 83		      sta	KyleSpritePtr+1	; set low and high bytes of the sprite bitmap of Kyle sprite pointer
+     49  f01f
+     50  f01f		       a9 07		      lda	#<KyleColor
+     51  f021		       85 84		      sta	KyleColorPtr
+     52  f023		       a9 f1		      lda	#>KyleColor
+     53  f025		       85 85		      sta	KyleColorPtr+1	; set low and high bytes of the color bitmap of Kyle color pointer
+     54  f027
+     55  f027
+     56  f027							; main loop
+     57  f027
+     58  f027				   StartFrame
+     59  f027
+     60  f027							; display VSYNC and VBLANK
+     61  f027
+     62  f027		       a9 02		      lda	#2
+     63  f029		       85 01		      sta	VBLANK	; turn on VBLANK
+     64  f02b		       85 00		      sta	VSYNC	; turn on VSYNC
+     65  f02d
+     66  f02d		       85 02		      sta	WSYNC
+     67  f02f		       85 02		      sta	WSYNC
+     68  f031		       85 02		      sta	WSYNC
+     69  f033
+     70  f033		       a9 00		      lda	#0
+     71  f035		       85 00		      sta	VSYNC	; turn off VSYNC
+     72  f037
+     73  f037		       a0 25		      ldy	#37
+     74  f039				   .VBlankLoop
+     75  f039		       85 02		      sta	WSYNC
+     76  f03b		       88		      dey
+     77  f03c		       d0 fb		      bne	.VBlankLoop
+     78  f03e
+     79  f03e		       85 01		      sta	VBLANK	; turn off VBLANK
+     80  f040
+     81  f040
+     82  f040							; display scanlines of game
+     83  f040
+     84  f040				   GameVisibleLine
+     85  f040		       a9 00		      lda	#$0
+     86  f042		       85 09		      sta	COLUBK	; set background to black
+     87  f044
+     88  f044		       a9 0e		      lda	#$0E
+     89  f046		       85 08		      sta	COLUPF	; set the terrain background color
+     90  f048
+     91  f048		       a9 01		      lda	#%00000001
+     92  f04a		       85 0a		      sta	CTRLPF	; enable playfield reflection
+     93  f04c		       a9 00		      lda	#0
+     94  f04e		       85 0d		      sta	PF0	; setting PF0 bit pattern
+     95  f050		       a9 04		      lda	#$04
+     96  f052		       85 0e		      sta	PF1	; setting PF1 bit pattern
+     97  f054		       a9 00		      lda	#0
+     98  f056		       85 0f		      sta	PF2	; setting PF2 bit pattern
+     99  f058
+    100  f058		       a2 60		      ldx	#96	; x counts the number of remaining scanlines
+    101  f05a		       a0 14		      ldy	#20
+    102  f05c
+    103  f05c				   .GameLineLoop
+    104  f05c
+    105  f05c
+    106  f05c				   .InsideKyleSprite
+    107  f05c		       8a		      txa
+    108  f05d		       38		      sec
+    109  f05e		       e5 81		      sbc	KyleYPos
+    110  f060		       c5 09		      cmp	KYLE_HEIGHT
+    111  f062		       90 02		      bcc	.DrawSpriteP0
+    112  f064		       a9 00		      lda	#0	; save a, set carry flag, subtract Kyle position, compare with height, jump to draw if within bounds
+    113  f066
+    114  f066				   .DrawSpriteP0
+    115  f066		       18		      clc
+    116  f067		       65 86		      adc	KyleOffset
+    117  f069		       a8		      tay
+    118  f06a		       b1 82		      lda	(KyleSpritePtr),Y
+    119  f06c		       85 02		      sta	WSYNC
+    120  f06e		       85 1b		      sta	GRP0
+    121  f070		       b1 84		      lda	(KyleColorPtr),Y
+    122  f072		       85 06		      sta	COLUP0	; get offset into y, jump to bitmap location for sprite plus y, load player register, jump to color location plus y, load color 
+    123  f074
+    124  f074		       85 02		      sta	WSYNC
+    125  f076
+    126  f076		       ca		      dex
+    127  f077		       d0 e3		      bne	.GameLineLoop	; decrement x, if not zero jump back up to GameLineLoop
+    128  f079
+    129  f079		       a9 00		      lda	#0
+    130  f07b		       85 86		      sta	KyleOffset	; reset Kyle offset
+    131  f07d
+    132  f07d		       85 02		      sta	WSYNC
+    133  f07f
+    134  f07f							; dsplay overscan
+    135  f07f
+    136  f07f		       a9 02		      lda	#2
+    137  f081		       85 01		      sta	VBLANK	; turn on VBLANK again
+    138  f083
+    139  f083		       a0 25		      ldy	#37
+    140  f085				   .OverScanLoop
+    141  f085		       85 02		      sta	WSYNC
+    142  f087		       88		      dey
+    143  f088		       d0 fb		      bne	.OverScanLoop
+    144  f08a
     145  f08a		       a9 00		      lda	#0
-    146  f08c		       85 86		      sta	KyleOffset	; check if joystick down is pressed, if so decrement y position, else fall through to end checks
+    146  f08c		       85 01		      sta	VBLANK	; turn off VBLANK
     147  f08e
-    148  f08e				   CheckP0Left
-    149  f08e		       a9 40		      lda	#%01000000
-    150  f090		       2c 80 02 	      bit	SWCHA
-    151  f093		       d0 06		      bne	CheckP0Right
-    152  f095		       c6 80		      dec	KyleXPos
-    153  f097		       a9 00		      lda	#0
-    154  f099		       85 86		      sta	KyleOffset	; check if joystick down is pressed, if so decrement y position, else fall through to end checks
-    155  f09b
-    156  f09b				   CheckP0Right
-    157  f09b		       a9 80		      lda	#%10000000
-    158  f09d		       2c 80 02 	      bit	SWCHA
-    159  f0a0		       d0 06		      bne	EndInputCheck
-    160  f0a2		       e6 80		      inc	KyleXPos
-    161  f0a4		       a9 00		      lda	#0
-    162  f0a6		       85 86		      sta	KyleOffset	; check if joystick down is pressed, if so decrement y position, else fall through to end checks
-    163  f0a8
-    164  f0a8				   EndInputCheck
-    165  f0a8							;-----------------------------------------------------------------------------------------------------------------------------
-    166  f0a8
-    167  f0a8							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    168  f0a8							;; Set player horizontal position while in VBLANK
-    169  f0a8							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    170  f0a8		       a5 80		      lda	KyleXPos	; load register A with desired X position
-    171  f0aa		       29 7f		      and	#$7F	; same as AND 01111111, forces bit 7 to zero
-    172  f0ac							; keeping the result positive
-    173  f0ac
-    174  f0ac		       38		      sec		; set carry flag before subtraction
-    175  f0ad
-    176  f0ad		       85 02		      sta	WSYNC	; wait for next scanline
-    177  f0af		       85 2b		      sta	HMCLR	; clear old horizontal position values
-    178  f0b1
-    179  f0b1				   DivideLoop
-    180  f0b1		       e9 0f		      sbc	#15	; Subtract 15 from A
-    181  f0b3		       b0 fc		      bcs	DivideLoop	; loop while carry flag is still set
-    182  f0b5
-    183  f0b5		       49 07		      eor	#7	; adjust the remainder in A between -8 and 7
-    184  f0b7		       0a		      asl		; shift left by 4, as HMP0 uses only 4 bits
-    185  f0b8		       0a		      asl
-    186  f0b9		       0a		      asl
-    187  f0ba		       0a		      asl
-    188  f0bb		       85 20		      sta	HMP0	; set smooth position value
-    189  f0bd		       85 10		      sta	RESP0	; fix rough position
-    190  f0bf		       85 02		      sta	WSYNC	; wait for next scanline
-    191  f0c1		       85 2a		      sta	HMOVE	; apply the fine position offset
-    192  f0c3							;-------------------------------------------------------------------------------------------------------------------------------
-    193  f0c3							; end of main loop, jump back to start 
-    194  f0c3
-    195  f0c3		       4c 23 f0 	      jmp	StartFrame
-    196  f0c6
-    197  f0c6							; sprite and color bitmaps
-    198  f0c6
-    199  f0c6				   KyleSprite
-    200  f0c6		       00		      .byte.b	#%00000000	;
-    201  f0c7		       0f		      .byte.b	#%00001111	; #####  
-    202  f0c8		       0f		      .byte.b	#%00001111	; #####
-    203  f0c9		       0f		      .byte.b	#%00001111	; #####
-    204  f0ca		       0f		      .byte.b	#%00001111	; #####
-    205  f0cb		       0f		      .byte.b	#%00001111	; #####
-    206  f0cc		       0f		      .byte.b	#%00001111	; ##### 
-    207  f0cd		       0f		      .byte.b	#%00001111	; #####   
-    208  f0ce		       0f		      .byte.b	#%00001111	; #####   
-    209  f0cf
-    210  f0cf				   KyleColor
-    211  f0cf		       00		      .byte.b	#$00
-    212  f0d0		       0e		      .byte.b	#$0E
-    213  f0d1		       0e		      .byte.b	#$0E
-    214  f0d2		       0e		      .byte.b	#$0E
-    215  f0d3		       0e		      .byte.b	#$0E
-    216  f0d4		       0e		      .byte.b	#$0E
-    217  f0d5		       0e		      .byte.b	#$0E
-    218  f0d6		       0e		      .byte.b	#$0E
-    219  f0d7		       0e		      .byte.b	#$0E
-    220  f0d8
-    221  f0d8							; complete ROM size with exactly 4KB
-    222  f0d8
-    223  fffc					      org	$FFFC	; move to position $FFFC
-    224  fffc		       00 f0		      word.w	Reset	; write 2 bytes with the program reset address
-    225  fffe		       00 f0		      word.w	Reset	; write 2 bytes with the interruption vector
+    148  f08e
+    149  f08e
+    150  f08e				   TestCollisions
+    151  f08e
+    152  f08e		       24 02		      bit	CXP0FB	; N=player0/playfield, V=player0/ball
+    153  f090		       10 08		      bpl	NoPlayFieldCollision	; if N is off then player0 did not collide with playfield
+    154  f092		       a5 87		      lda	SavedXPos	; recall saved X
+    155  f094		       85 80		      sta	KyleXPos	; and move player back to it
+    156  f096		       a5 88		      lda	SavedYPos	; recall saved Y
+    157  f098		       85 81		      sta	KyleYPos	; and move player back to it
+    158  f09a
+    159  f09a				   NoPlayFieldCollision
+    160  f09a		       85 2c		      sta	CXCLR
+    161  f09c
+    162  f09c							; check joystick
+    163  f09c
+    164  f09c				   CheckP0Up
+    165  f09c		       a9 10		      lda	#%00010000
+    166  f09e		       2c 80 02 	      bit	SWCHA
+    167  f0a1		       d0 0a		      bne	CheckP0Down
+    168  f0a3		       a5 81		      lda	KyleYPos
+    169  f0a5		       85 88		      sta	SavedYPos
+    170  f0a7		       e6 81		      inc	KyleYPos
+    171  f0a9		       a9 00		      lda	#0
+    172  f0ab		       85 86		      sta	KyleOffset	; check if joystick up is pressed, if so increment y position, else fall through to next check
+    173  f0ad
+    174  f0ad				   CheckP0Down
+    175  f0ad		       a9 20		      lda	#%00100000
+    176  f0af		       2c 80 02 	      bit	SWCHA
+    177  f0b2		       d0 0a		      bne	CheckP0Left
+    178  f0b4		       a5 81		      lda	KyleYPos
+    179  f0b6		       85 88		      sta	SavedYPos
+    180  f0b8		       c6 81		      dec	KyleYPos
+    181  f0ba		       a9 00		      lda	#0
+    182  f0bc		       85 86		      sta	KyleOffset	; check if joystick down is pressed, if so decrement y position, else fall through to end checks
+    183  f0be
+    184  f0be				   CheckP0Left
+    185  f0be		       a9 40		      lda	#%01000000
+    186  f0c0		       2c 80 02 	      bit	SWCHA
+    187  f0c3		       d0 0a		      bne	CheckP0Right
+    188  f0c5		       a5 80		      lda	KyleXPos
+    189  f0c7		       85 87		      sta	SavedXPos
+    190  f0c9		       c6 80		      dec	KyleXPos
+    191  f0cb		       a9 00		      lda	#0
+    192  f0cd		       85 86		      sta	KyleOffset	; check if joystick down is pressed, if so decrement y position, else fall through to end checks
+    193  f0cf
+    194  f0cf				   CheckP0Right
+    195  f0cf		       a9 80		      lda	#%10000000
+    196  f0d1		       2c 80 02 	      bit	SWCHA
+    197  f0d4		       d0 0a		      bne	EndInputCheck
+    198  f0d6		       a5 80		      lda	KyleXPos
+    199  f0d8		       85 87		      sta	SavedXPos
+    200  f0da		       e6 80		      inc	KyleXPos
+    201  f0dc		       a9 00		      lda	#0
+    202  f0de		       85 86		      sta	KyleOffset	; check if joystick down is pressed, if so decrement y position, else fall through to end checks
+    203  f0e0
+    204  f0e0				   EndInputCheck
+    205  f0e0
+    206  f0e0
+    207  f0e0
+    208  f0e0
+    209  f0e0
+    210  f0e0							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    211  f0e0							;; Set player horizontal position while in VBLANK
+    212  f0e0							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    213  f0e0		       a5 80		      lda	KyleXPos	; load register A with desired X position
+    214  f0e2		       29 7f		      and	#$7F	; same as AND 01111111, forces bit 7 to zero
+    215  f0e4							; keeping the result positive
+    216  f0e4
+    217  f0e4		       38		      sec		; set carry flag before subtraction
+    218  f0e5
+    219  f0e5		       85 02		      sta	WSYNC	; wait for next scanline
+    220  f0e7		       85 2b		      sta	HMCLR	; clear old horizontal position values
+    221  f0e9
+    222  f0e9				   DivideLoop
+    223  f0e9		       e9 0f		      sbc	#15	; Subtract 15 from A
+    224  f0eb		       b0 fc		      bcs	DivideLoop	; loop while carry flag is still set
+    225  f0ed
+    226  f0ed		       49 07		      eor	#7	; adjust the remainder in A between -8 and 7
+    227  f0ef		       0a		      asl		; shift left by 4, as HMP0 uses only 4 bits
+    228  f0f0		       0a		      asl
+    229  f0f1		       0a		      asl
+    230  f0f2		       0a		      asl
+    231  f0f3		       85 20		      sta	HMP0	; set smooth position value
+    232  f0f5		       85 10		      sta	RESP0	; fix rough position
+    233  f0f7		       85 02		      sta	WSYNC	; wait for next scanline
+    234  f0f9		       85 2a		      sta	HMOVE	; apply the fine position offset
+    235  f0fb							;-------------------------------------------------------------------------------------------------------------------------------
+    236  f0fb							; end of main loop, jump back to start 
+    237  f0fb
+    238  f0fb		       4c 27 f0 	      jmp	StartFrame
+    239  f0fe
+    240  f0fe							; sprite and color bitmaps
+    241  f0fe
+    242  f0fe				   KyleSprite
+    243  f0fe		       00		      .byte.b	#%00000000	;
+    244  f0ff		       0f		      .byte.b	#%00001111	; #####  
+    245  f100		       0f		      .byte.b	#%00001111	; #####
+    246  f101		       0f		      .byte.b	#%00001111	; #####
+    247  f102		       0f		      .byte.b	#%00001111	; #####
+    248  f103		       0f		      .byte.b	#%00001111	; #####
+    249  f104		       0f		      .byte.b	#%00001111	; ##### 
+    250  f105		       0f		      .byte.b	#%00001111	; #####   
+    251  f106		       0f		      .byte.b	#%00001111	; #####   
+    252  f107
+    253  f107				   KyleColor
+    254  f107		       00		      .byte.b	#$00
+    255  f108		       0e		      .byte.b	#$0E
+    256  f109		       0e		      .byte.b	#$0E
+    257  f10a		       0e		      .byte.b	#$0E
+    258  f10b		       0e		      .byte.b	#$0E
+    259  f10c		       0e		      .byte.b	#$0E
+    260  f10d		       0e		      .byte.b	#$0E
+    261  f10e		       0e		      .byte.b	#$0E
+    262  f10f		       0e		      .byte.b	#$0E
+    263  f110
+    264  f110							; complete ROM size with exactly 4KB
+    265  f110
+    266  fffc					      org	$FFFC	; move to position $FFFC
+    267  fffc		       00 f0		      word.w	Reset	; write 2 bytes with the program reset address
+    268  fffe		       00 f0		      word.w	Reset	; write 2 bytes with the interruption vector
