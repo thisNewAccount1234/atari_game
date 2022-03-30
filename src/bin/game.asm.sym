@@ -1,9 +1,13 @@
 --- Symbol List (sorted by symbol)
-0.DrawSpriteP0           f066              (R )
+0.bottom                 f081              (R )
+0.DrawSpriteP0           f060              (R )
+0.end                    f089              (R )
 0.FREE_BYTES             0000                  
-0.GameLineLoop           f05c              (R )
-0.InsideKyleSprite       f05c                  
-0.OverScanLoop           f085              (R )
+0.GameLineLoop           f056              (R )
+0.InsideKyleSprite       f056                  
+0.OverScanLoop           f0a0              (R )
+0.sides                  f079              (R )
+0.skip                   f091              (R )
 0.VBlankLoop             f039              (R )
 1.CLEAR_STACK            f006              (R )
 AUDC0                    0015                  
@@ -12,11 +16,10 @@ AUDF0                    0017
 AUDF1                    0018                  
 AUDV0                    0019                  
 AUDV1                    001a                  
-BUILDING_HEIGHT          0012                  
-CheckP0Down              f0ad              (R )
-CheckP0Left              f0be              (R )
-CheckP0Right             f0cf              (R )
-CheckP0Up                f09c                  
+CheckP0Down              f0c8              (R )
+CheckP0Left              f0d9              (R )
+CheckP0Right             f0ea              (R )
+CheckP0Up                f0b7                  
 COLUBK                   0009              (R )
 COLUP0                   0006              (R )
 COLUP1                   0007                  
@@ -31,11 +34,11 @@ CXM1P                    0001
 CXP0FB                   0002              (R )
 CXP1FB                   0003                  
 CXPPMM                   0007                  
-DivideLoop               f0e9              (R )
+DivideLoop               f104              (R )
 ENABL                    001f                  
 ENAM0                    001d                  
 ENAM1                    001e                  
-EndInputCheck            f0e0              (R )
+EndInputCheck            f0fb              (R )
 GameVisibleLine          f040                  
 GRP0                     001b              (R )
 GRP1                     001c                  
@@ -54,14 +57,14 @@ INPT4                    000c
 INPT5                    000d                  
 INTIM                    0284                  
 KYLE_HEIGHT              0009              (R )
-KyleColor                f107              (R )
+KyleColor                f122              (R )
 KyleColorPtr             0084              (R )
 KyleOffset               0086              (R )
-KyleSprite               f0fe              (R )
+KyleSprite               f119              (R )
 KyleSpritePtr            0082              (R )
 KyleXPos                 0080              (R )
 KyleYPos                 0081              (R )
-NoPlayFieldCollision     f09a              (R )
+NoPlayFieldCollision     f0b5              (R )
 NUSIZ0                   0004                  
 NUSIZ1                   0005                  
 PF0                      000d              (R )
@@ -86,7 +89,7 @@ SWBCNT                   0283
 SWCHA                    0280              (R )
 SWCHB                    0282                  
 T1024T                   0297                  
-TestCollisions           f08e                  
+TestCollisions           f0a9                  
 TIA_BASE_ADDRESS         0000              (R )
 TIA_BASE_READ_ADDRESS    0000              (R )
 TIA_BASE_WRITE_ADDRESS   0000              (R )

@@ -91,9 +91,7 @@ GameVisibleLine:
     sta CTRLPF               ; enable playfield reflection
     lda #0
     sta PF0                  ; setting PF0 bit pattern
-    lda #$04
     sta PF1                  ; setting PF1 bit pattern
-    lda #0
     sta PF2                  ; setting PF2 bit pattern
 
     ldx #96                    ; x counts the number of remaining scanlines
@@ -119,6 +117,28 @@ GameVisibleLine:
     sta COLUP0                 ; get offset into y, jump to bitmap location for sprite plus y, load player register, jump to color location plus y, load color 
 
     sta WSYNC                
+
+    txa 
+    cmp #60
+    bne .sides
+    lda #$7E
+    sta PF1
+.sides
+    cmp #58
+    bne .bottom
+    lda #$42
+    sta PF1
+.bottom
+    cmp #40
+    bne .end
+    lda #$7E
+    sta PF1
+.end
+    cmp #38
+    bne .skip
+    lda #$0
+    sta PF1
+.skip
 
     dex                      
     bne .GameLineLoop          ; decrement x, if not zero jump back up to GameLineLoop
