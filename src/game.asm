@@ -135,10 +135,10 @@ GameVisibleLine:
     sta PF1
 .end
     cmp #38
-    bne .skip
+    bne .endBuilding
     lda #$0
     sta PF1
-.skip
+.endBuilding
 
     dex                      
     bne .GameLineLoop          ; decrement x, if not zero jump back up to GameLineLoop
