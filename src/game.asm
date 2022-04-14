@@ -16,12 +16,10 @@ KyleYPos         byte
 KyleSpritePtr    word         
 KyleColorPtr     word
 KyleOffset       byte           
-SavedXPos        byte   
-SavedYPos        byte          ; saved x and y positions for Kyle and enemy   
 
 ; define constants
 
-KYLE_HEIGHT = 9
+KYLE_HEIGHT = 9  
 
 ; start our ROM code at memory address $F000
 
@@ -35,11 +33,9 @@ Reset:
 ; inititialize variables
 
     lda #50
-    sta KyleXPos    
-    sta SavedXPos          
+    sta KyleXPos              
     lda #60
-    sta KyleYPos               
-    sta SavedYPos              ; set Kyle x and y
+    sta KyleYPos               ; set Kyle x and y
 
     lda #<KyleSprite
     sta KyleSpritePtr         
@@ -84,6 +80,7 @@ GameVisibleLine:
     lda #$0
     sta COLUBK                 ; set background to black
 
+<<<<<<< Updated upstream
     lda #$0E
     sta COLUPF               ; set the terrain background color
 
@@ -96,6 +93,8 @@ GameVisibleLine:
     lda #0
     sta PF2                  ; setting PF2 bit pattern
 
+=======
+>>>>>>> Stashed changes
     ldx #96                    ; x counts the number of remaining scanlines
 
 .GameLineLoop:
@@ -143,88 +142,26 @@ GameVisibleLine:
     sta VBLANK                 ; turn off VBLANK
 
 
-TestCollisions:
-    bit CXP0FB      
-    bpl NoPlayFieldCollision     
-    lda SavedXPos      
-    sta KyleXPos     
-    lda SavedYPos      
-    sta KyleYPos               ; test Kyle collision with playfield, if collision save Kyle x and y
-
-NoPlayFieldCollision:
-    sta CXCLR                  ; clear collision flags
-
 ; check joystick
 
 CheckP0Up:
     lda #%00010000             
     bit SWCHA
-    bne CheckP0Down
-    lda KyleYPos
-    sta SavedYPos            
+    bne CheckP0Down          
     inc KyleYPos
     lda #0
-    sta KyleOffset             ; check if joystick up is pressed, if so save and increment y position, else fall through to next check
+    sta KyleOffset             ; check if joystick up is pressed, if so increment y position, else fall through to next check
 
 CheckP0Down:
     lda #%00100000          
     bit SWCHA
-    bne CheckP0Left
-    lda KyleYPos
-    sta SavedYPos          
+    bne EndInputCheck          
     dec KyleYPos
     lda #0
-    sta KyleOffset             ; check if joystick down is pressed, if so save and decrement y position, else fall through to end checks
+    sta KyleOffset             ; check if joystick down is pressed, if so decrement y position, else fall through to end checks
 
-CheckP0Left:
-    lda #%01000000
-    bit SWCHA
-    bne CheckP0Right
-    lda KyleXPos
-    sta SavedXPos  
-    dec KyleXPos
-    lda #0
-    sta KyleOffset             ; check if joystick down is pressed, if so save and decrement y position, else fall through to end checks
-
-CheckP0Right:
-    lda #%10000000
-    bit SWCHA
-    bne EndInputCheck
-    lda KyleXPos
-    sta SavedXPos  
-    inc KyleXPos
-    lda #0
-    sta KyleOffset             ; check if joystick down is pressed, if so save and decrement y position, else fall through to end checks
-    
 EndInputCheck:
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Set player horizontal position while in VBLANK
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    lda KyleXPos     ; load register A with desired X position
-    and #$7F       ; same as AND 01111111, forces bit 7 to zero
-                   ; keeping the result positive
-
-    sec            ; set carry flag before subtraction
-
-    sta WSYNC      ; wait for next scanline
-    sta HMCLR      ; clear old horizontal position values
-
-DivideLoop:
-    sbc #15        ; Subtract 15 from A
-    bcs DivideLoop ; loop while carry flag is still set
-
-    eor #7         ; adjust the remainder in A between -8 and 7
-    asl            ; shift left by 4, as HMP0 uses only 4 bits
-    asl
-    asl
-    asl
-    sta HMP0       ; set smooth position value
-    sta RESP0      ; fix rough position
-    sta WSYNC      ; wait for next scanline
-    sta HMOVE      ; apply the fine position offset
-;-------------------------------------------------------------------------------------------------------------------------------
 ; end of main loop, jump back to start 
 
     jmp StartFrame           
