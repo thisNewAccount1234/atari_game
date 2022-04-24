@@ -1,13 +1,13 @@
 --- Symbol List (sorted by symbol)
 0.bottom                 f081              (R )
 0.DrawSpriteP0           f060              (R )
-0.end                    f089              (R )
+0.endBuilding            f089              (R )
 0.FREE_BYTES             0000                  
 0.GameLineLoop           f056              (R )
 0.InsideKyleSprite       f056                  
+0.none                   f091              (R )
 0.OverScanLoop           f0a0              (R )
 0.sides                  f079              (R )
-0.skip                   f091              (R )
 0.VBlankLoop             f039              (R )
 1.CLEAR_STACK            f006              (R )
 AUDC0                    0015                  

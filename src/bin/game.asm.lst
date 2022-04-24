@@ -522,15 +522,15 @@
     130  f07f		       85 0e		      sta	PF1
     131  f081				   .bottom
     132  f081		       c9 28		      cmp	#40
-    133  f083		       d0 04		      bne	.end
+    133  f083		       d0 04		      bne	.endBuilding
     134  f085		       a9 7e		      lda	#$7E
     135  f087		       85 0e		      sta	PF1
-    136  f089				   .end
+    136  f089				   .endBuilding
     137  f089		       c9 26		      cmp	#38
-    138  f08b		       d0 04		      bne	.skip
+    138  f08b		       d0 04		      bne	.none
     139  f08d		       a9 00		      lda	#$0
     140  f08f		       85 0e		      sta	PF1
-    141  f091				   .skip
+    141  f091				   .none
     142  f091
     143  f091		       ca		      dex
     144  f092		       d0 c2		      bne	.GameLineLoop	; decrement x, if not zero jump back up to GameLineLoop
