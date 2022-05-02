@@ -1,8 +1,223 @@
 ------- FILE game.asm LEVEL 1 PASS 2
-      1  fffe					      processor	6502
+      1  10000 ????						;     processor 6502
       2  10000 ????
-      3  10000 ????						; include required files with VCS register memory mapping and macros
+      3  10000 ????						; ; include required files with VCS register memory mapping and macros
       4  10000 ????
+      5  10000 ????						;     include "vcs.h"
+      6  10000 ????						;     include "macro.h"
+      7  10000 ????
+      8  10000 ????
+      9  10000 ????						; ; declare the variables starting from memory address $80
+     10  10000 ????
+     11  10000 ????						;     seg.u Variables
+     12  10000 ????						;     org $80
+     13  10000 ????
+     14  10000 ????						; KyleXPos	    byte	 
+     15  10000 ????						; KyleYPos	    byte	 
+     16  10000 ????						; KyleSpritePtr    word	 
+     17  10000 ????						; KyleColorPtr     word
+     18  10000 ????						; KyleOffset	    byte	   
+     19  10000 ????
+     20  10000 ????						; ; define constants
+     21  10000 ????
+     22  10000 ????						; KYLE_HEIGHT = 9  
+     23  10000 ????
+     24  10000 ????						; ; start our ROM code at memory address $F000
+     25  10000 ????
+     26  10000 ????						;     seg Code
+     27  10000 ????						;     org $F000
+     28  10000 ????
+     29  10000 ????						; Reset:
+     30  10000 ????						;     CLEAN_START		
+     31  10000 ????
+     32  10000 ????
+     33  10000 ????						; ; inititialize variables
+     34  10000 ????
+     35  10000 ????						;     lda #50
+     36  10000 ????						;     sta KyleXPos		 
+     37  10000 ????						;     lda #60
+     38  10000 ????						;     sta KyleYPos		  ; set Kyle x and y
+     39  10000 ????
+     40  10000 ????						;     lda #<KyleSprite
+     41  10000 ????						;     sta KyleSpritePtr	 
+     42  10000 ????						;     lda #>KyleSprite
+     43  10000 ????						;     sta KyleSpritePtr+1	  ; set low and high bytes of the sprite bitmap of Kyle sprite pointer
+     44  10000 ????
+     45  10000 ????						;     lda #<KyleColor
+     46  10000 ????						;     sta KyleColorPtr 	 
+     47  10000 ????						;     lda #>KyleColor
+     48  10000 ????						;     sta KyleColorPtr+1	  ; set low and high bytes of the color bitmap of Kyle color pointer
+     49  10000 ????
+     50  10000 ????
+     51  10000 ????						; ; main loop
+     52  10000 ????
+     53  10000 ????						; StartFrame:
+     54  10000 ????
+     55  10000 ????						; ; display VSYNC and VBLANK
+     56  10000 ????
+     57  10000 ????						;     lda #2
+     58  10000 ????						;     sta VBLANK		  ; turn on VBLANK
+     59  10000 ????						;     sta VSYNC		  ; turn on VSYNC
+     60  10000 ????
+     61  10000 ????						;     sta WSYNC 
+     62  10000 ????						;     sta WSYNC 
+     63  10000 ????						;     sta WSYNC		  
+     64  10000 ????
+     65  10000 ????						;     lda #0
+     66  10000 ????						;     sta VSYNC		  ; turn off VSYNC
+     67  10000 ????
+     68  10000 ????						;     ldy #37
+     69  10000 ????						; .VBlankLoop:
+     70  10000 ????						;     sta WSYNC 
+     71  10000 ????						;     dey
+     72  10000 ????						;     bne .VBlankLoop
+     73  10000 ????
+     74  10000 ????						;     sta VBLANK		  ; turn off VBLANK
+     75  10000 ????
+     76  10000 ????
+     77  10000 ????						; ; display scanlines of game
+     78  10000 ????
+     79  10000 ????						; GameVisibleLine:
+     80  10000 ????						;     lda #$0
+     81  10000 ????						;     sta COLUBK		  ; set background to black
+     82  10000 ????
+     83  10000 ????						;     lda #$0E
+     84  10000 ????						;     sta COLUPF		; set the terrain background color
+     85  10000 ????
+     86  10000 ????						;     lda #%00000001
+     87  10000 ????						;     sta CTRLPF		; enable playfield reflection
+     88  10000 ????						;     lda #0
+     89  10000 ????						;     sta PF0			; setting PF0 bit pattern
+     90  10000 ????						;     lda #$04
+     91  10000 ????						;     sta PF1			; setting PF1 bit pattern
+     92  10000 ????						;     lda #0
+     93  10000 ????						;     sta PF2			; setting PF2 bit pattern
+     94  10000 ????
+     95  10000 ????
+     96  10000 ????						;     ldx #96			  ; x counts the number of remaining scanlines
+     97  10000 ????
+     98  10000 ????						; .GameLineLoop:
+     99  10000 ????
+    100  10000 ????						; .InsideKyleSprite:	       
+    101  10000 ????						;     txa			  
+    102  10000 ????						;     sec			  
+    103  10000 ????						;     sbc KyleYPos		  
+    104  10000 ????						;     cmp KYLE_HEIGHT		  
+    105  10000 ????						;     bcc .DrawSpriteP0	  
+    106  10000 ????						;     lda #0			  ; save a, set carry flag, subtract Kyle position, compare with height, jump to draw if within bounds
+    107  10000 ????
+    108  10000 ????						; .DrawSpriteP0:
+    109  10000 ????						;     clc			
+    110  10000 ????						;     adc KyleOffset	     
+    111  10000 ????						;     tay			
+    112  10000 ????						;     lda (KyleSpritePtr),Y	 
+    113  10000 ????						;     sta WSYNC		
+    114  10000 ????						;     sta GRP0 		
+    115  10000 ????						;     lda (KyleColorPtr),Y	 
+    116  10000 ????						;     sta COLUP0		  ; get offset into y, jump to bitmap location for sprite plus y, load player register, jump to color location plus y, load color 
+    117  10000 ????
+    118  10000 ????						;     sta WSYNC		
+    119  10000 ????
+    120  10000 ????						;     dex			
+    121  10000 ????						;     bne .GameLineLoop	  ; decrement x, if not zero jump back up to GameLineLoop
+    122  10000 ????
+    123  10000 ????						;     lda #0
+    124  10000 ????						;     sta KyleOffset		  ; reset Kyle offset
+    125  10000 ????
+    126  10000 ????						;     sta WSYNC		
+    127  10000 ????
+    128  10000 ????						; ; dsplay overscan
+    129  10000 ????
+    130  10000 ????						;     lda #2
+    131  10000 ????						;     sta VBLANK		  ; turn on VBLANK again
+    132  10000 ????
+    133  10000 ????						;     ldy #37
+    134  10000 ????						; .OverScanLoop:
+    135  10000 ????						;     sta WSYNC 
+    136  10000 ????						;     dey
+    137  10000 ????						;     bne .OverScanLoop
+    138  10000 ????
+    139  10000 ????						;     lda #0
+    140  10000 ????						;     sta VBLANK		  ; turn off VBLANK
+    141  10000 ????
+    142  10000 ????
+    143  10000 ????						; ; check joystick
+    144  10000 ????
+    145  10000 ????						; CheckP0Up:
+    146  10000 ????						;     lda #%00010000		  
+    147  10000 ????						;     bit SWCHA
+    148  10000 ????						;     bne CheckP0Down		
+    149  10000 ????						;     inc KyleYPos
+    150  10000 ????						;     lda #0
+    151  10000 ????						;     sta KyleOffset		  ; check if joystick up is pressed, if so increment y position, else fall through to next check
+    152  10000 ????
+    153  10000 ????						; CheckP0Down:
+    154  10000 ????						;     lda #%00100000	       
+    155  10000 ????						;     bit SWCHA
+    156  10000 ????						;     bne EndInputCheck	  
+    157  10000 ????						;     dec KyleYPos
+    158  10000 ????						;     lda #0
+    159  10000 ????						;     sta KyleOffset		  ; check if joystick down is pressed, if so decrement y position, else fall through to end checks
+    160  10000 ????
+    161  10000 ????						; EndInputCheck:
+    162  10000 ????
+    163  10000 ????						; ; end of main loop, jump back to start 
+    164  10000 ????
+    165  10000 ????						;     jmp StartFrame		
+    166  10000 ????
+    167  10000 ????						; ; sprite and color bitmaps
+    168  10000 ????
+    169  10000 ????						; KyleSprite:
+    170  10000 ????						;     .byte #%00000000 	;
+    171  10000 ????						;     .byte #%00001111 	; #####  
+    172  10000 ????						;     .byte #%00001111 	; #####
+    173  10000 ????						;     .byte #%00001111 	; #####
+    174  10000 ????						;     .byte #%00001111 	; #####
+    175  10000 ????						;     .byte #%00001111 	; #####
+    176  10000 ????						;     .byte #%00001111 	; ##### 
+    177  10000 ????						;     .byte #%00001111 	; #####   
+    178  10000 ????						;     .byte #%00001111 	; #####   
+    179  10000 ????
+    180  10000 ????						; KyleColor:
+    181  10000 ????						;     .byte #$00
+    182  10000 ????						;     .byte #$0E
+    183  10000 ????						;     .byte #$0E
+    184  10000 ????						;     .byte #$0E
+    185  10000 ????						;     .byte #$0E
+    186  10000 ????						;     .byte #$0E
+    187  10000 ????						;     .byte #$0E
+    188  10000 ????						;     .byte #$0E
+    189  10000 ????						;     .byte #$0E
+    190  10000 ????
+    191  10000 ????						; ; complete ROM size with exactly 4KB
+    192  10000 ????
+    193  10000 ????						;     org $FFFC		; move to position $FFFC
+    194  10000 ????						;     word Reset		; write 2 bytes with the program reset address
+    195  10000 ????						;     word Reset		; write 2 bytes with the interruption vector
+    196  10000 ????
+    197  10000 ????
+    198  10000 ????
+    199  10000 ????
+    200  10000 ????
+    201  10000 ????
+    202  10000 ????
+    203  10000 ????
+    204  10000 ????
+    205  10000 ????
+    206  10000 ????
+    207  10000 ????
+    208  10000 ????
+    209  10000 ????
+    210  10000 ????
+    211  10000 ????
+    212  10000 ????
+    213  10000 ????
+    214  10000 ????
+    215  10000 ????
+    216  10000 ????				       processor	6502
+    217  10000 ????
+    218  10000 ????						; include required files with VCS register memory mapping and macros
+    219  10000 ????
 ------- FILE vcs.h LEVEL 2 PASS 2
       0  10000 ????				       include	"vcs.h"
       1  10000 ????						; VCS.H
@@ -206,6 +421,7 @@
     199  0000 ????
     200  0000 ????						; EOF
 ------- FILE game.asm
+    221  0000 ????
 ------- FILE macro.h LEVEL 2 PASS 2
       0  0000 ????				      include	"macro.h"
       1  0000 ????						; MACRO.H
@@ -385,46 +601,29 @@
     175  0000 ????
     176  0000 ????						; EOF
 ------- FILE game.asm
-      7  0000 ????
-      8  0000 ????
-      9  0000 ????						; declare the variables starting from memory address $80
-     10  0000 ????
-     11 U0087 ????				      seg.u	Variables
-     12 U0080					      org	$80
-     13 U0080
-     14 U0080		       00	   KyleXPos   byte.b
-     15 U0081		       00	   KyleYPos   byte.b
-     16 U0082		       00 00	   KyleSpritePtr word.w
-     17 U0084		       00 00	   KyleColorPtr word.w
-     18 U0086		       00	   KyleOffset byte.b
-<<<<<<< Updated upstream
-     19 U0087		       00	   SavedXPos  byte.b
-     20 U0088		       00	   SavedYPos  byte.b		; saved x and y positions for Kyle and enemy	
-     21 U0089
-     22 U0089							; define constants
-     23 U0089
-     24 U0089		       00 09	   KYLE_HEIGHT =	9
-     25 U0089		       00 12	   BUILDING_HEIGHT =	18
-     26 U0089
-     27 U0089							; start our ROM code at memory address $F000
-     28 U0089
-     29  10000 ????				       seg	Code
-     30  f000					      org	$F000
-     31  f000
-     32  f000				   Reset
-=======
-     19 U0087
-     20 U0087							; define constants
-     21 U0087
-     22 U0087		       00 09	   KYLE_HEIGHT =	9
-     23 U0087
-     24 U0087							; start our ROM code at memory address $F000
-     25 U0087
-     26  10000 ????				       seg	Code
-     27  f000					      org	$F000
-     28  f000
-     29  f000				   Reset
->>>>>>> Stashed changes
+    223  0000 ????
+    224  0000 ????
+    225  0000 ????						; declare the variables starting from memory address $80
+    226  0000 ????
+    227 U0087 ????				      seg.u	Variables
+    228 U0080					      org	$80
+    229 U0080
+    230 U0080		       00	   KyleXPos   byte.b
+    231 U0081		       00	   KyleYPos   byte.b
+    232 U0082		       00 00	   KyleSpritePtr word.w
+    233 U0084		       00 00	   KyleColorPtr word.w
+    234 U0086		       00	   KyleOffset byte.b
+    235 U0087
+    236 U0087							; define constants
+    237 U0087
+    238 U0087		       00 09	   KYLE_HEIGHT =	9
+    239 U0087
+    240 U0087							; start our ROM code at memory address $F000
+    241 U0087
+    242  10000 ????				       seg	Code
+    243  f000					      org	$F000
+    244  f000
+    245  f000				   Reset
       0  f000					      CLEAN_START
       1  f000		       78		      sei
       2  f001		       d8		      cld
@@ -437,393 +636,711 @@
       9  f008		       48		      pha
      10  f009		       d0 fb		      bne	.CLEAR_STACK
      11  f00b
-<<<<<<< Updated upstream
-     34  f00b
-     35  f00b
-     36  f00b							; inititialize variables
-     37  f00b
-     38  f00b		       a9 32		      lda	#50
-     39  f00d		       85 80		      sta	KyleXPos
-     40  f00f		       85 87		      sta	SavedXPos
-     41  f011		       a9 3c		      lda	#60
-     42  f013		       85 81		      sta	KyleYPos
-     43  f015		       85 88		      sta	SavedYPos	; set Kyle x and y
-     44  f017
-     45  f017		       a9 fe		      lda	#<KyleSprite
-     46  f019		       85 82		      sta	KyleSpritePtr
-     47  f01b		       a9 f0		      lda	#>KyleSprite
-     48  f01d		       85 83		      sta	KyleSpritePtr+1	; set low and high bytes of the sprite bitmap of Kyle sprite pointer
-     49  f01f
-     50  f01f		       a9 07		      lda	#<KyleColor
-     51  f021		       85 84		      sta	KyleColorPtr
-     52  f023		       a9 f1		      lda	#>KyleColor
-     53  f025		       85 85		      sta	KyleColorPtr+1	; set low and high bytes of the color bitmap of Kyle color pointer
-     54  f027
-     55  f027
-     56  f027							; main loop
-     57  f027
-     58  f027				   StartFrame
-     59  f027
-     60  f027							; display VSYNC and VBLANK
-     61  f027
-     62  f027		       a9 02		      lda	#2
-     63  f029		       85 01		      sta	VBLANK	; turn on VBLANK
-     64  f02b		       85 00		      sta	VSYNC	; turn on VSYNC
-     65  f02d
-     66  f02d		       85 02		      sta	WSYNC
-     67  f02f		       85 02		      sta	WSYNC
-     68  f031		       85 02		      sta	WSYNC
-     69  f033
-     70  f033		       a9 00		      lda	#0
-     71  f035		       85 00		      sta	VSYNC	; turn off VSYNC
-     72  f037
-     73  f037		       a0 25		      ldy	#37
-     74  f039				   .VBlankLoop
-     75  f039		       85 02		      sta	WSYNC
-     76  f03b		       88		      dey
-     77  f03c		       d0 fb		      bne	.VBlankLoop
-     78  f03e
-     79  f03e		       85 01		      sta	VBLANK	; turn off VBLANK
-     80  f040
-     81  f040
-     82  f040							; display scanlines of game
-     83  f040
-     84  f040				   GameVisibleLine
-     85  f040		       a9 00		      lda	#$0
-     86  f042		       85 09		      sta	COLUBK	; set background to black
-     87  f044
-     88  f044		       a9 0e		      lda	#$0E
-     89  f046		       85 08		      sta	COLUPF	; set the terrain background color
-     90  f048
-     91  f048		       a9 01		      lda	#%00000001
-     92  f04a		       85 0a		      sta	CTRLPF	; enable playfield reflection
-     93  f04c		       a9 00		      lda	#0
-     94  f04e		       85 0d		      sta	PF0	; setting PF0 bit pattern
-     95  f050		       a9 04		      lda	#$04
-     96  f052		       85 0e		      sta	PF1	; setting PF1 bit pattern
-     97  f054		       a9 00		      lda	#0
-     98  f056		       85 0f		      sta	PF2	; setting PF2 bit pattern
-     99  f058
-    100  f058		       a2 60		      ldx	#96	; x counts the number of remaining scanlines
-    101  f05a		       a0 14		      ldy	#20
-    102  f05c
-    103  f05c				   .GameLineLoop
-    104  f05c
-    105  f05c
-    106  f05c				   .InsideKyleSprite
-    107  f05c		       8a		      txa
-    108  f05d		       38		      sec
-    109  f05e		       e5 81		      sbc	KyleYPos
-    110  f060		       c5 09		      cmp	KYLE_HEIGHT
-    111  f062		       90 02		      bcc	.DrawSpriteP0
-    112  f064		       a9 00		      lda	#0	; save a, set carry flag, subtract Kyle position, compare with height, jump to draw if within bounds
-    113  f066
-    114  f066				   .DrawSpriteP0
-    115  f066		       18		      clc
-    116  f067		       65 86		      adc	KyleOffset
-    117  f069		       a8		      tay
-    118  f06a		       b1 82		      lda	(KyleSpritePtr),Y
-    119  f06c		       85 02		      sta	WSYNC
-    120  f06e		       85 1b		      sta	GRP0
-    121  f070		       b1 84		      lda	(KyleColorPtr),Y
-    122  f072		       85 06		      sta	COLUP0	; get offset into y, jump to bitmap location for sprite plus y, load player register, jump to color location plus y, load color 
-    123  f074
-    124  f074		       85 02		      sta	WSYNC
-    125  f076
-    126  f076		       ca		      dex
-    127  f077		       d0 e3		      bne	.GameLineLoop	; decrement x, if not zero jump back up to GameLineLoop
-    128  f079
-    129  f079		       a9 00		      lda	#0
-    130  f07b		       85 86		      sta	KyleOffset	; reset Kyle offset
-    131  f07d
-    132  f07d		       85 02		      sta	WSYNC
-    133  f07f
-    134  f07f							; dsplay overscan
-    135  f07f
-    136  f07f		       a9 02		      lda	#2
-    137  f081		       85 01		      sta	VBLANK	; turn on VBLANK again
-    138  f083
-    139  f083		       a0 25		      ldy	#37
-    140  f085				   .OverScanLoop
-    141  f085		       85 02		      sta	WSYNC
-    142  f087		       88		      dey
-    143  f088		       d0 fb		      bne	.OverScanLoop
-    144  f08a
-    145  f08a		       a9 00		      lda	#0
-    146  f08c		       85 01		      sta	VBLANK	; turn off VBLANK
-    147  f08e
-    148  f08e
-    149  f08e
-    150  f08e				   TestCollisions
-    151  f08e
-    152  f08e		       24 02		      bit	CXP0FB	; N=player0/playfield, V=player0/ball
-    153  f090		       10 08		      bpl	NoPlayFieldCollision	; if N is off then player0 did not collide with playfield
-    154  f092		       a5 87		      lda	SavedXPos	; recall saved X
-    155  f094		       85 80		      sta	KyleXPos	; and move player back to it
-    156  f096		       a5 88		      lda	SavedYPos	; recall saved Y
-    157  f098		       85 81		      sta	KyleYPos	; and move player back to it
-    158  f09a
-    159  f09a				   NoPlayFieldCollision
-    160  f09a		       85 2c		      sta	CXCLR
-    161  f09c
-    162  f09c							; check joystick
-    163  f09c
-    164  f09c				   CheckP0Up
-    165  f09c		       a9 10		      lda	#%00010000
-    166  f09e		       2c 80 02 	      bit	SWCHA
-    167  f0a1		       d0 0a		      bne	CheckP0Down
-    168  f0a3		       a5 81		      lda	KyleYPos
-    169  f0a5		       85 88		      sta	SavedYPos
-    170  f0a7		       e6 81		      inc	KyleYPos
-    171  f0a9		       a9 00		      lda	#0
-    172  f0ab		       85 86		      sta	KyleOffset	; check if joystick up is pressed, if so increment y position, else fall through to next check
-    173  f0ad
-    174  f0ad				   CheckP0Down
-    175  f0ad		       a9 20		      lda	#%00100000
-    176  f0af		       2c 80 02 	      bit	SWCHA
-    177  f0b2		       d0 0a		      bne	CheckP0Left
-    178  f0b4		       a5 81		      lda	KyleYPos
-    179  f0b6		       85 88		      sta	SavedYPos
-    180  f0b8		       c6 81		      dec	KyleYPos
-    181  f0ba		       a9 00		      lda	#0
-    182  f0bc		       85 86		      sta	KyleOffset	; check if joystick down is pressed, if so decrement y position, else fall through to end checks
-    183  f0be
-    184  f0be				   CheckP0Left
-    185  f0be		       a9 40		      lda	#%01000000
-    186  f0c0		       2c 80 02 	      bit	SWCHA
-    187  f0c3		       d0 0a		      bne	CheckP0Right
-    188  f0c5		       a5 80		      lda	KyleXPos
-    189  f0c7		       85 87		      sta	SavedXPos
-    190  f0c9		       c6 80		      dec	KyleXPos
-    191  f0cb		       a9 00		      lda	#0
-    192  f0cd		       85 86		      sta	KyleOffset	; check if joystick down is pressed, if so decrement y position, else fall through to end checks
-    193  f0cf
-    194  f0cf				   CheckP0Right
-    195  f0cf		       a9 80		      lda	#%10000000
-    196  f0d1		       2c 80 02 	      bit	SWCHA
-    197  f0d4		       d0 0a		      bne	EndInputCheck
-    198  f0d6		       a5 80		      lda	KyleXPos
-    199  f0d8		       85 87		      sta	SavedXPos
-    200  f0da		       e6 80		      inc	KyleXPos
-    201  f0dc		       a9 00		      lda	#0
-    202  f0de		       85 86		      sta	KyleOffset	; check if joystick down is pressed, if so decrement y position, else fall through to end checks
-    203  f0e0
-    204  f0e0				   EndInputCheck
-    205  f0e0
-    206  f0e0
-    207  f0e0
-    208  f0e0
-    209  f0e0
-    210  f0e0							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    211  f0e0							;; Set player horizontal position while in VBLANK
-    212  f0e0							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    213  f0e0		       a5 80		      lda	KyleXPos	; load register A with desired X position
-    214  f0e2		       29 7f		      and	#$7F	; same as AND 01111111, forces bit 7 to zero
-    215  f0e4							; keeping the result positive
-    216  f0e4
-    217  f0e4		       38		      sec		; set carry flag before subtraction
-    218  f0e5
-    219  f0e5		       85 02		      sta	WSYNC	; wait for next scanline
-    220  f0e7		       85 2b		      sta	HMCLR	; clear old horizontal position values
-    221  f0e9
-    222  f0e9				   DivideLoop
-    223  f0e9		       e9 0f		      sbc	#15	; Subtract 15 from A
-    224  f0eb		       b0 fc		      bcs	DivideLoop	; loop while carry flag is still set
-    225  f0ed
-    226  f0ed		       49 07		      eor	#7	; adjust the remainder in A between -8 and 7
-    227  f0ef		       0a		      asl		; shift left by 4, as HMP0 uses only 4 bits
-    228  f0f0		       0a		      asl
-    229  f0f1		       0a		      asl
-    230  f0f2		       0a		      asl
-    231  f0f3		       85 20		      sta	HMP0	; set smooth position value
-    232  f0f5		       85 10		      sta	RESP0	; fix rough position
-    233  f0f7		       85 02		      sta	WSYNC	; wait for next scanline
-    234  f0f9		       85 2a		      sta	HMOVE	; apply the fine position offset
-    235  f0fb							;-------------------------------------------------------------------------------------------------------------------------------
-    236  f0fb							; end of main loop, jump back to start 
-    237  f0fb
-    238  f0fb		       4c 27 f0 	      jmp	StartFrame
-    239  f0fe
-    240  f0fe							; sprite and color bitmaps
-    241  f0fe
-    242  f0fe				   KyleSprite
-    243  f0fe		       00		      .byte.b	#%00000000	;
-    244  f0ff		       0f		      .byte.b	#%00001111	; #####  
-    245  f100		       0f		      .byte.b	#%00001111	; #####
-    246  f101		       0f		      .byte.b	#%00001111	; #####
-    247  f102		       0f		      .byte.b	#%00001111	; #####
-    248  f103		       0f		      .byte.b	#%00001111	; #####
-    249  f104		       0f		      .byte.b	#%00001111	; ##### 
-    250  f105		       0f		      .byte.b	#%00001111	; #####   
-    251  f106		       0f		      .byte.b	#%00001111	; #####   
-    252  f107
-    253  f107				   KyleColor
-    254  f107		       00		      .byte.b	#$00
-    255  f108		       0e		      .byte.b	#$0E
-    256  f109		       0e		      .byte.b	#$0E
-    257  f10a		       0e		      .byte.b	#$0E
-    258  f10b		       0e		      .byte.b	#$0E
-    259  f10c		       0e		      .byte.b	#$0E
-    260  f10d		       0e		      .byte.b	#$0E
-    261  f10e		       0e		      .byte.b	#$0E
-    262  f10f		       0e		      .byte.b	#$0E
-    263  f110
-    264  f110							; complete ROM size with exactly 4KB
-    265  f110
-    266  fffc					      org	$FFFC	; move to position $FFFC
-    267  fffc		       00 f0		      word.w	Reset	; write 2 bytes with the program reset address
-    268  fffe		       00 f0		      word.w	Reset	; write 2 bytes with the interruption vector
-=======
-     31  f00b
-     32  f00b
-     33  f00b							; inititialize variables
-     34  f00b
-     35  f00b		       a9 32		      lda	#50
-     36  f00d		       85 80		      sta	KyleXPos
-     37  f00f		       a9 3c		      lda	#60
-     38  f011		       85 81		      sta	KyleYPos	; set Kyle x and y
-     39  f013
-     40  f013		       a9 91		      lda	#<KyleSprite
-     41  f015		       85 82		      sta	KyleSpritePtr
-     42  f017		       a9 f0		      lda	#>KyleSprite
-     43  f019		       85 83		      sta	KyleSpritePtr+1	; set low and high bytes of the sprite bitmap of Kyle sprite pointer
-     44  f01b
-     45  f01b		       a9 9a		      lda	#<KyleColor
-     46  f01d		       85 84		      sta	KyleColorPtr
-     47  f01f		       a9 f0		      lda	#>KyleColor
-     48  f021		       85 85		      sta	KyleColorPtr+1	; set low and high bytes of the color bitmap of Kyle color pointer
-     49  f023
-     50  f023
-     51  f023							; main loop
-     52  f023
-     53  f023				   StartFrame
-     54  f023
-     55  f023							; display VSYNC and VBLANK
-     56  f023
-     57  f023		       a9 02		      lda	#2
-     58  f025		       85 01		      sta	VBLANK	; turn on VBLANK
-     59  f027		       85 00		      sta	VSYNC	; turn on VSYNC
-     60  f029
-     61  f029		       85 02		      sta	WSYNC
-     62  f02b		       85 02		      sta	WSYNC
-     63  f02d		       85 02		      sta	WSYNC
-     64  f02f
-     65  f02f		       a9 00		      lda	#0
-     66  f031		       85 00		      sta	VSYNC	; turn off VSYNC
-     67  f033
-     68  f033		       a0 25		      ldy	#37
-     69  f035				   .VBlankLoop
-     70  f035		       85 02		      sta	WSYNC
-     71  f037		       88		      dey
-     72  f038		       d0 fb		      bne	.VBlankLoop
-     73  f03a
-     74  f03a		       85 01		      sta	VBLANK	; turn off VBLANK
-     75  f03c
-     76  f03c
-     77  f03c							; display scanlines of game
-     78  f03c
-     79  f03c				   GameVisibleLine
-     80  f03c		       a9 00		      lda	#$0
-     81  f03e		       85 09		      sta	COLUBK	; set background to black
-     82  f040
-     83  f040		       a2 60		      ldx	#96	; x counts the number of remaining scanlines
-     84  f042
-     85  f042				   .GameLineLoop
-     86  f042
-     87  f042				   .InsideKyleSprite
-     88  f042		       8a		      txa
-     89  f043		       38		      sec
-     90  f044		       e5 81		      sbc	KyleYPos
-     91  f046		       c5 09		      cmp	KYLE_HEIGHT
-     92  f048		       90 02		      bcc	.DrawSpriteP0
-     93  f04a		       a9 00		      lda	#0	; save a, set carry flag, subtract Kyle position, compare with height, jump to draw if within bounds
-     94  f04c
-     95  f04c				   .DrawSpriteP0
-     96  f04c		       18		      clc
-     97  f04d		       65 86		      adc	KyleOffset
-     98  f04f		       a8		      tay
-     99  f050		       b1 82		      lda	(KyleSpritePtr),Y
-    100  f052		       85 02		      sta	WSYNC
-    101  f054		       85 1b		      sta	GRP0
-    102  f056		       b1 84		      lda	(KyleColorPtr),Y
-    103  f058		       85 06		      sta	COLUP0	; get offset into y, jump to bitmap location for sprite plus y, load player register, jump to color location plus y, load color 
-    104  f05a
-    105  f05a		       85 02		      sta	WSYNC
-    106  f05c
-    107  f05c		       ca		      dex
-    108  f05d		       d0 e3		      bne	.GameLineLoop	; decrement x, if not zero jump back up to GameLineLoop
-    109  f05f
-    110  f05f		       a9 00		      lda	#0
-    111  f061		       85 86		      sta	KyleOffset	; reset Kyle offset
-    112  f063
-    113  f063		       85 02		      sta	WSYNC
-    114  f065
-    115  f065							; dsplay overscan
-    116  f065
-    117  f065		       a9 02		      lda	#2
-    118  f067		       85 01		      sta	VBLANK	; turn on VBLANK again
-    119  f069
-    120  f069		       a0 25		      ldy	#37
-    121  f06b				   .OverScanLoop
-    122  f06b		       85 02		      sta	WSYNC
-    123  f06d		       88		      dey
-    124  f06e		       d0 fb		      bne	.OverScanLoop
-    125  f070
-    126  f070		       a9 00		      lda	#0
-    127  f072		       85 01		      sta	VBLANK	; turn off VBLANK
-    128  f074
-    129  f074
-    130  f074							; check joystick
-    131  f074
-    132  f074				   CheckP0Up
-    133  f074		       a9 10		      lda	#%00010000
-    134  f076		       2c 80 02 	      bit	SWCHA
-    135  f079		       d0 06		      bne	CheckP0Down
-    136  f07b		       e6 81		      inc	KyleYPos
-    137  f07d		       a9 00		      lda	#0
-    138  f07f		       85 86		      sta	KyleOffset	; check if joystick up is pressed, if so increment y position, else fall through to next check
-    139  f081
-    140  f081				   CheckP0Down
-    141  f081		       a9 20		      lda	#%00100000
-    142  f083		       2c 80 02 	      bit	SWCHA
-    143  f086		       d0 06		      bne	EndInputCheck
-    144  f088		       c6 81		      dec	KyleYPos
-    145  f08a		       a9 00		      lda	#0
-    146  f08c		       85 86		      sta	KyleOffset	; check if joystick down is pressed, if so decrement y position, else fall through to end checks
-    147  f08e
-    148  f08e				   EndInputCheck
-    149  f08e
-    150  f08e							; end of main loop, jump back to start 
-    151  f08e
-    152  f08e		       4c 23 f0 	      jmp	StartFrame
-    153  f091
-    154  f091							; sprite and color bitmaps
-    155  f091
-    156  f091				   KyleSprite
-    157  f091		       00		      .byte.b	#%00000000	;
-    158  f092		       0f		      .byte.b	#%00001111	; #####  
-    159  f093		       0f		      .byte.b	#%00001111	; #####
-    160  f094		       0f		      .byte.b	#%00001111	; #####
-    161  f095		       0f		      .byte.b	#%00001111	; #####
-    162  f096		       0f		      .byte.b	#%00001111	; #####
-    163  f097		       0f		      .byte.b	#%00001111	; ##### 
-    164  f098		       0f		      .byte.b	#%00001111	; #####   
-    165  f099		       0f		      .byte.b	#%00001111	; #####   
-    166  f09a
-    167  f09a				   KyleColor
-    168  f09a		       00		      .byte.b	#$00
-    169  f09b		       0e		      .byte.b	#$0E
-    170  f09c		       0e		      .byte.b	#$0E
-    171  f09d		       0e		      .byte.b	#$0E
-    172  f09e		       0e		      .byte.b	#$0E
-    173  f09f		       0e		      .byte.b	#$0E
-    174  f0a0		       0e		      .byte.b	#$0E
-    175  f0a1		       0e		      .byte.b	#$0E
-    176  f0a2		       0e		      .byte.b	#$0E
-    177  f0a3
-    178  f0a3							; complete ROM size with exactly 4KB
-    179  f0a3
-    180  fffc					      org	$FFFC	; move to position $FFFC
-    181  fffc		       00 f0		      word.w	Reset	; write 2 bytes with the program reset address
-    182  fffe		       00 f0		      word.w	Reset	; write 2 bytes with the interruption vector
->>>>>>> Stashed changes
+    247  f00b
+    248  f00b
+    249  f00b							; inititialize variables
+    250  f00b
+    251  f00b		       a9 32		      lda	#50
+    252  f00d		       85 80		      sta	KyleXPos
+    253  f00f		       a9 3c		      lda	#60
+    254  f011		       85 81		      sta	KyleYPos	; set Kyle x and y
+    255  f013
+    256  f013		       a9 8c		      lda	#<KyleSprite
+    257  f015		       85 82		      sta	KyleSpritePtr
+    258  f017		       a9 f2		      lda	#>KyleSprite
+    259  f019		       85 83		      sta	KyleSpritePtr+1	; set low and high bytes of the sprite bitmap of Kyle sprite pointer
+    260  f01b
+    261  f01b		       a9 95		      lda	#<KyleColor
+    262  f01d		       85 84		      sta	KyleColorPtr
+    263  f01f		       a9 f2		      lda	#>KyleColor
+    264  f021		       85 85		      sta	KyleColorPtr+1	; set low and high bytes of the color bitmap of Kyle color pointer
+    265  f023
+    266  f023
+    267  f023							; main loop
+    268  f023
+    269  f023				   StartFrame
+    270  f023
+    271  f023							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    272  f023							;; Start a new frame by configuring VBLANK and VSYNC
+    273  f023							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    274  f023
+    275  f023		       a9 02		      lda	#02
+    276  f025		       85 01		      sta	VBLANK	; turn on VBLANK
+    277  f027		       85 00		      sta	VSYNC	; turn on VSYNC
+    278  f029
+    279  f029							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    280  f029							;; Generate the three lines of VSYNC
+    281  f029							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    282  f029		       85 02		      sta	WSYNC
+    283  f02b		       85 02		      sta	WSYNC
+    284  f02d		       85 02		      sta	WSYNC
+    285  f02f
+    286  f02f		       a9 00		      lda	#0
+    287  f031		       85 00		      sta	VSYNC	; turn off VSYNC
+    288  f033							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    289  f033							;; Let the TIA output the 37 recommended lines of VBLANK
+    290  f033							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    291  f033		       a0 25		      ldy	#37
+    292  f035				   .VBlankLoop
+    293  f035		       85 02		      sta	WSYNC
+    294  f037		       88		      dey
+    295  f038		       d0 fb		      bne	.VBlankLoop
+    296  f03a
+    297  f03a		       a9 00		      lda	#0
+    298  f03c		       85 01		      sta	VBLANK	; turn VBLANK off
+    299  f03e
+    300  f03e							;
+    301  f03e							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    302  f03e							;; Set the CTRLPF register to allow playfield reflect
+    303  f03e							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    304  f03e		       a9 01		      lda	#%00000001	; CTRLPF register (D0 is the reflect flag)
+    305  f040		       85 0a		      sta	CTRLPF	; enable playfield reflection
+    306  f042							;-----------------------------------------------------------------------------
+    307  f042
+    308  f042							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    309  f042							;; Draw the 192 visible scanlines
+    310  f042							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    311  f042
+    312  f042							; Skip 7 scanlines with no PF set
+    313  f042		       a2 00		      ldx	#0
+    314  f044		       86 0d		      stx	PF0
+    315  f046		       86 0e		      stx	PF1
+    316  f048		       86 0f		      stx	PF2
+    317  f04a					      REPEAT	7
+    318  f04a		       85 02		      sta	WSYNC
+    317  f04a					      REPEND
+    318  f04c		       85 02		      sta	WSYNC
+    317  f04c					      REPEND
+    318  f04e		       85 02		      sta	WSYNC
+    317  f04e					      REPEND
+    318  f050		       85 02		      sta	WSYNC
+    317  f050					      REPEND
+    318  f052		       85 02		      sta	WSYNC
+    317  f052					      REPEND
+    318  f054		       85 02		      sta	WSYNC
+    317  f054					      REPEND
+    318  f056		       85 02		      sta	WSYNC
+    319  f058					      REPEND
+    320  f058
+    321  f058							;------------------------------------------------------------------------------	
+    322  f058
+    323  f058		       a2 59		      ldx	#89	; x counts the number of remaining scanlines
+    324  f05a
+    325  f05a				   PlayfieldLoop
+    326  f05a		       85 02		      sta	WSYNC	; 3	 (0)
+    327  f05c		       bd 32 f2 	      lda	PFColors,x	; 4	 (4)
+    328  f05f		       85 08		      sta	COLUPF	; 3	 (7)
+    329  f061		       bd 24 f1 	      lda	PF0DataA,x	; 4	 (11)
+    330  f064		       85 0d		      sta	PF0	; 3	 (14)
+    331  f066		       bd 7e f1 	      lda	PF1DataA,x	; 4	 (18)
+    332  f069		       85 0e		      sta	PF1	; 3	 (21)
+    333  f06b		       bd d8 f1 	      lda	PF2DataA,x	; 4	 (25*)
+    334  f06e		       85 0f		      sta	PF2	; 3	 (28)
+    335  f070
+    336  f070
+    337  f070
+    338  f070
+    339  f070
+    340  f070				   .InsideKyleSprite
+    341  f070		       8a		      txa
+    342  f071		       38		      sec
+    343  f072		       e5 81		      sbc	KyleYPos
+    344  f074		       c5 09		      cmp	KYLE_HEIGHT
+    345  f076		       90 02		      bcc	.DrawSpriteP0
+    346  f078		       a9 00		      lda	#0	; save a, set carry flag, subtract Kyle position, compare with height, jump to draw if within bounds
+    347  f07a
+    348  f07a				   .DrawSpriteP0
+    349  f07a		       18		      clc
+    350  f07b		       65 86		      adc	KyleOffset
+    351  f07d		       a8		      tay
+    352  f07e		       b1 82		      lda	(KyleSpritePtr),Y
+    353  f080		       85 02		      sta	WSYNC
+    354  f082		       85 1b		      sta	GRP0
+    355  f084		       b1 84		      lda	(KyleColorPtr),Y
+    356  f086		       85 06		      sta	COLUP0	; get offset into y, jump to bitmap location for sprite plus y, load player register, jump to color location plus y, load color 
+    357  f088
+    358  f088
+    359  f088
+    360  f088
+    361  f088
+    362  f088
+    363  f088
+    364  f088
+    365  f088
+    366  f088
+    367  f088		       ca		      dex		; 2	 (65)
+    368  f089		       d0 cf		      bne	PlayfieldLoop
+    369  f08b
+    370  f08b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    371  f08b							;; Output 49 more VBLANK overscan lines to complete our frame
+    372  f08b							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    373  f08b		       a9 02		      lda	#2
+    374  f08d		       85 01		      sta	VBLANK	; enable VBLANK back again
+    375  f08f					      REPEAT	49
+    376  f08f		       85 02		      sta	WSYNC
+    375  f08f					      REPEND
+    376  f091		       85 02		      sta	WSYNC
+    375  f091					      REPEND
+    376  f093		       85 02		      sta	WSYNC
+    375  f093					      REPEND
+    376  f095		       85 02		      sta	WSYNC
+    375  f095					      REPEND
+    376  f097		       85 02		      sta	WSYNC
+    375  f097					      REPEND
+    376  f099		       85 02		      sta	WSYNC
+    375  f099					      REPEND
+    376  f09b		       85 02		      sta	WSYNC
+    375  f09b					      REPEND
+    376  f09d		       85 02		      sta	WSYNC
+    375  f09d					      REPEND
+    376  f09f		       85 02		      sta	WSYNC
+    375  f09f					      REPEND
+    376  f0a1		       85 02		      sta	WSYNC
+    375  f0a1					      REPEND
+    376  f0a3		       85 02		      sta	WSYNC
+    375  f0a3					      REPEND
+    376  f0a5		       85 02		      sta	WSYNC
+    375  f0a5					      REPEND
+    376  f0a7		       85 02		      sta	WSYNC
+    375  f0a7					      REPEND
+    376  f0a9		       85 02		      sta	WSYNC
+    375  f0a9					      REPEND
+    376  f0ab		       85 02		      sta	WSYNC
+    375  f0ab					      REPEND
+    376  f0ad		       85 02		      sta	WSYNC
+    375  f0ad					      REPEND
+    376  f0af		       85 02		      sta	WSYNC
+    375  f0af					      REPEND
+    376  f0b1		       85 02		      sta	WSYNC
+    375  f0b1					      REPEND
+    376  f0b3		       85 02		      sta	WSYNC
+    375  f0b3					      REPEND
+    376  f0b5		       85 02		      sta	WSYNC
+    375  f0b5					      REPEND
+    376  f0b7		       85 02		      sta	WSYNC
+    375  f0b7					      REPEND
+    376  f0b9		       85 02		      sta	WSYNC
+    375  f0b9					      REPEND
+    376  f0bb		       85 02		      sta	WSYNC
+    375  f0bb					      REPEND
+    376  f0bd		       85 02		      sta	WSYNC
+    375  f0bd					      REPEND
+    376  f0bf		       85 02		      sta	WSYNC
+    375  f0bf					      REPEND
+    376  f0c1		       85 02		      sta	WSYNC
+    375  f0c1					      REPEND
+    376  f0c3		       85 02		      sta	WSYNC
+    375  f0c3					      REPEND
+    376  f0c5		       85 02		      sta	WSYNC
+    375  f0c5					      REPEND
+    376  f0c7		       85 02		      sta	WSYNC
+    375  f0c7					      REPEND
+    376  f0c9		       85 02		      sta	WSYNC
+    375  f0c9					      REPEND
+    376  f0cb		       85 02		      sta	WSYNC
+    375  f0cb					      REPEND
+    376  f0cd		       85 02		      sta	WSYNC
+    375  f0cd					      REPEND
+    376  f0cf		       85 02		      sta	WSYNC
+    375  f0cf					      REPEND
+    376  f0d1		       85 02		      sta	WSYNC
+    375  f0d1					      REPEND
+    376  f0d3		       85 02		      sta	WSYNC
+    375  f0d3					      REPEND
+    376  f0d5		       85 02		      sta	WSYNC
+    375  f0d5					      REPEND
+    376  f0d7		       85 02		      sta	WSYNC
+    375  f0d7					      REPEND
+    376  f0d9		       85 02		      sta	WSYNC
+    375  f0d9					      REPEND
+    376  f0db		       85 02		      sta	WSYNC
+    375  f0db					      REPEND
+    376  f0dd		       85 02		      sta	WSYNC
+    375  f0dd					      REPEND
+    376  f0df		       85 02		      sta	WSYNC
+    375  f0df					      REPEND
+    376  f0e1		       85 02		      sta	WSYNC
+    375  f0e1					      REPEND
+    376  f0e3		       85 02		      sta	WSYNC
+    375  f0e3					      REPEND
+    376  f0e5		       85 02		      sta	WSYNC
+    375  f0e5					      REPEND
+    376  f0e7		       85 02		      sta	WSYNC
+    375  f0e7					      REPEND
+    376  f0e9		       85 02		      sta	WSYNC
+    375  f0e9					      REPEND
+    376  f0eb		       85 02		      sta	WSYNC
+    375  f0eb					      REPEND
+    376  f0ed		       85 02		      sta	WSYNC
+    375  f0ed					      REPEND
+    376  f0ef		       85 02		      sta	WSYNC
+    377  f0f1					      REPEND
+    378  f0f1
+    379  f0f1							; Skip 7 scanlines with no PF set
+    380  f0f1		       a2 00		      ldx	#0
+    381  f0f3		       86 0d		      stx	PF0
+    382  f0f5		       86 0e		      stx	PF1
+    383  f0f7		       86 0f		      stx	PF2
+    384  f0f9					      REPEAT	7
+    385  f0f9		       85 02		      sta	WSYNC
+    384  f0f9					      REPEND
+    385  f0fb		       85 02		      sta	WSYNC
+    384  f0fb					      REPEND
+    385  f0fd		       85 02		      sta	WSYNC
+    384  f0fd					      REPEND
+    385  f0ff		       85 02		      sta	WSYNC
+    384  f0ff					      REPEND
+    385  f101		       85 02		      sta	WSYNC
+    384  f101					      REPEND
+    385  f103		       85 02		      sta	WSYNC
+    384  f103					      REPEND
+    385  f105		       85 02		      sta	WSYNC
+    386  f107					      REPEND
+    387  f107
+    388  f107
+    389  f107
+    390  f107
+    391  f107							; check joystick
+    392  f107
+    393  f107				   CheckP0Up
+    394  f107		       a9 10		      lda	#%00010000
+    395  f109		       2c 80 02 	      bit	SWCHA
+    396  f10c		       d0 06		      bne	CheckP0Down
+    397  f10e		       e6 81		      inc	KyleYPos
+    398  f110		       a9 00		      lda	#0
+    399  f112		       85 86		      sta	KyleOffset	; check if joystick up is pressed, if so increment y position, else fall through to next check
+    400  f114
+    401  f114				   CheckP0Down
+    402  f114		       a9 20		      lda	#%00100000
+    403  f116		       2c 80 02 	      bit	SWCHA
+    404  f119		       d0 06		      bne	EndInputCheck
+    405  f11b		       c6 81		      dec	KyleYPos
+    406  f11d		       a9 00		      lda	#0
+    407  f11f		       85 86		      sta	KyleOffset	; check if joystick down is pressed, if so decrement y position, else fall through to end checks
+    408  f121
+    409  f121				   EndInputCheck
+    410  f121
+    411  f121
+    412  f121
+    413  f121							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    414  f121							;; Loop to next frame
+    415  f121							;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    416  f121		       4c 23 f0 	      jmp	StartFrame
+    417  f124
+    418  f124				   PF0DataA
+    419  f124		       00		      .byte.b	%00000000
+    420  f125		       00		      .byte.b	%00000000
+    421  f126		       00		      .byte.b	%00000000
+    422  f127		       00		      .byte.b	%00000000
+    423  f128		       80		      .byte.b	%10000000
+    424  f129		       80		      .byte.b	%10000000
+    425  f12a		       80		      .byte.b	%10000000
+    426  f12b		       80		      .byte.b	%10000000
+    427  f12c		       80		      .byte.b	%10000000
+    428  f12d		       80		      .byte.b	%10000000
+    429  f12e		       80		      .byte.b	%10000000
+    430  f12f		       80		      .byte.b	%10000000
+    431  f130		       80		      .byte.b	%10000000
+    432  f131		       80		      .byte.b	%10000000
+    433  f132		       80		      .byte.b	%10000000
+    434  f133		       80		      .byte.b	%10000000
+    435  f134		       80		      .byte.b	%10000000
+    436  f135		       80		      .byte.b	%10000000
+    437  f136		       80		      .byte.b	%10000000
+    438  f137		       80		      .byte.b	%10000000
+    439  f138		       80		      .byte.b	%10000000
+    440  f139		       80		      .byte.b	%10000000
+    441  f13a		       80		      .byte.b	%10000000
+    442  f13b		       00		      .byte.b	%00000000
+    443  f13c		       00		      .byte.b	%00000000
+    444  f13d		       00		      .byte.b	%00000000
+    445  f13e		       00		      .byte.b	%00000000
+    446  f13f		       00		      .byte.b	%00000000
+    447  f140		       00		      .byte.b	%00000000
+    448  f141		       00		      .byte.b	%00000000
+    449  f142		       00		      .byte.b	%00000000
+    450  f143		       00		      .byte.b	%00000000
+    451  f144		       00		      .byte.b	%00000000
+    452  f145		       00		      .byte.b	%00000000
+    453  f146		       00		      .byte.b	%00000000
+    454  f147		       00		      .byte.b	%00000000
+    455  f148		       00		      .byte.b	%00000000
+    456  f149		       00		      .byte.b	%00000000
+    457  f14a		       00		      .byte.b	%00000000
+    458  f14b		       00		      .byte.b	%00000000
+    459  f14c		       00		      .byte.b	%00000000
+    460  f14d		       00		      .byte.b	%00000000
+    461  f14e		       00		      .byte.b	%00000000
+    462  f14f		       00		      .byte.b	%00000000
+    463  f150		       00		      .byte.b	%00000000
+    464  f151		       00		      .byte.b	%00000000
+    465  f152		       00		      .byte.b	%00000000
+    466  f153		       00		      .byte.b	%00000000
+    467  f154		       00		      .byte.b	%00000000
+    468  f155		       00		      .byte.b	%00000000
+    469  f156		       00		      .byte.b	%00000000
+    470  f157		       00		      .byte.b	%00000000
+    471  f158		       00		      .byte.b	%00000000
+    472  f159		       00		      .byte.b	%00000000
+    473  f15a		       00		      .byte.b	%00000000
+    474  f15b		       00		      .byte.b	%00000000
+    475  f15c		       00		      .byte.b	%00000000
+    476  f15d		       00		      .byte.b	%00000000
+    477  f15e		       00		      .byte.b	%00000000
+    478  f15f		       00		      .byte.b	%00000000
+    479  f160		       00		      .byte.b	%00000000
+    480  f161		       00		      .byte.b	%00000000
+    481  f162		       00		      .byte.b	%00000000
+    482  f163		       00		      .byte.b	%00000000
+    483  f164		       00		      .byte.b	%00000000
+    484  f165		       00		      .byte.b	%00000000
+    485  f166		       80		      .byte.b	%10000000
+    486  f167		       80		      .byte.b	%10000000
+    487  f168		       80		      .byte.b	%10000000
+    488  f169		       80		      .byte.b	%10000000
+    489  f16a		       80		      .byte.b	%10000000
+    490  f16b		       80		      .byte.b	%10000000
+    491  f16c		       80		      .byte.b	%10000000
+    492  f16d		       80		      .byte.b	%10000000
+    493  f16e		       80		      .byte.b	%10000000
+    494  f16f		       80		      .byte.b	%10000000
+    495  f170		       80		      .byte.b	%10000000
+    496  f171		       80		      .byte.b	%10000000
+    497  f172		       80		      .byte.b	%10000000
+    498  f173		       80		      .byte.b	%10000000
+    499  f174		       80		      .byte.b	%10000000
+    500  f175		       80		      .byte.b	%10000000
+    501  f176		       80		      .byte.b	%10000000
+    502  f177		       80		      .byte.b	%10000000
+    503  f178		       80		      .byte.b	%10000000
+    504  f179		       00		      .byte.b	%00000000
+    505  f17a		       00		      .byte.b	%00000000
+    506  f17b		       00		      .byte.b	%00000000
+    507  f17c		       00		      .byte.b	%00000000
+    508  f17d		       00		      .byte.b	%00000000
+    509  f17e
+    510  f17e
+    511  f17e							;    if >. != >[.+(PLAY_FIELD_LINES)]
+    512  f17e							;	 align 256
+    513  f17e							;    endif
+    514  f17e
+    515  f17e				   PF1DataA
+    516  f17e		       00		      .byte.b	%00000000
+    517  f17f		       00		      .byte.b	%00000000
+    518  f180		       00		      .byte.b	%00000000
+    519  f181		       00		      .byte.b	%00000000
+    520  f182		       f0		      .byte.b	%11110000
+    521  f183		       f0		      .byte.b	%11110000
+    522  f184		       10		      .byte.b	%00010000
+    523  f185		       10		      .byte.b	%00010000
+    524  f186		       10		      .byte.b	%00010000
+    525  f187		       10		      .byte.b	%00010000
+    526  f188		       10		      .byte.b	%00010000
+    527  f189		       10		      .byte.b	%00010000
+    528  f18a		       10		      .byte.b	%00010000
+    529  f18b		       10		      .byte.b	%00010000
+    530  f18c		       10		      .byte.b	%00010000
+    531  f18d		       10		      .byte.b	%00010000
+    532  f18e		       10		      .byte.b	%00010000
+    533  f18f		       10		      .byte.b	%00010000
+    534  f190		       10		      .byte.b	%00010000
+    535  f191		       10		      .byte.b	%00010000
+    536  f192		       10		      .byte.b	%00010000
+    537  f193		       f0		      .byte.b	%11110000
+    538  f194		       f0		      .byte.b	%11110000
+    539  f195		       00		      .byte.b	%00000000
+    540  f196		       00		      .byte.b	%00000000
+    541  f197		       00		      .byte.b	%00000000
+    542  f198		       00		      .byte.b	%00000000
+    543  f199		       00		      .byte.b	%00000000
+    544  f19a		       00		      .byte.b	%00000000
+    545  f19b		       00		      .byte.b	%00000000
+    546  f19c		       00		      .byte.b	%00000000
+    547  f19d		       00		      .byte.b	%00000000
+    548  f19e		       00		      .byte.b	%00000000
+    549  f19f		       00		      .byte.b	%00000000
+    550  f1a0		       00		      .byte.b	%00000000
+    551  f1a1		       00		      .byte.b	%00000000
+    552  f1a2		       00		      .byte.b	%00000000
+    553  f1a3		       00		      .byte.b	%00000000
+    554  f1a4		       00		      .byte.b	%00000000
+    555  f1a5		       00		      .byte.b	%00000000
+    556  f1a6		       00		      .byte.b	%00000000
+    557  f1a7		       00		      .byte.b	%00000000
+    558  f1a8		       00		      .byte.b	%00000000
+    559  f1a9		       00		      .byte.b	%00000000
+    560  f1aa		       00		      .byte.b	%00000000
+    561  f1ab		       00		      .byte.b	%00000000
+    562  f1ac		       00		      .byte.b	%00000000
+    563  f1ad		       00		      .byte.b	%00000000
+    564  f1ae		       00		      .byte.b	%00000000
+    565  f1af		       00		      .byte.b	%00000000
+    566  f1b0		       00		      .byte.b	%00000000
+    567  f1b1		       00		      .byte.b	%00000000
+    568  f1b2		       00		      .byte.b	%00000000
+    569  f1b3		       00		      .byte.b	%00000000
+    570  f1b4		       00		      .byte.b	%00000000
+    571  f1b5		       00		      .byte.b	%00000000
+    572  f1b6		       00		      .byte.b	%00000000
+    573  f1b7		       00		      .byte.b	%00000000
+    574  f1b8		       00		      .byte.b	%00000000
+    575  f1b9		       00		      .byte.b	%00000000
+    576  f1ba		       00		      .byte.b	%00000000
+    577  f1bb		       00		      .byte.b	%00000000
+    578  f1bc		       00		      .byte.b	%00000000
+    579  f1bd		       00		      .byte.b	%00000000
+    580  f1be		       00		      .byte.b	%00000000
+    581  f1bf		       00		      .byte.b	%00000000
+    582  f1c0		       f0		      .byte.b	%11110000
+    583  f1c1		       f0		      .byte.b	%11110000
+    584  f1c2		       10		      .byte.b	%00010000
+    585  f1c3		       10		      .byte.b	%00010000
+    586  f1c4		       10		      .byte.b	%00010000
+    587  f1c5		       10		      .byte.b	%00010000
+    588  f1c6		       10		      .byte.b	%00010000
+    589  f1c7		       10		      .byte.b	%00010000
+    590  f1c8		       10		      .byte.b	%00010000
+    591  f1c9		       10		      .byte.b	%00010000
+    592  f1ca		       10		      .byte.b	%00010000
+    593  f1cb		       10		      .byte.b	%00010000
+    594  f1cc		       10		      .byte.b	%00010000
+    595  f1cd		       10		      .byte.b	%00010000
+    596  f1ce		       10		      .byte.b	%00010000
+    597  f1cf		       10		      .byte.b	%00010000
+    598  f1d0		       10		      .byte.b	%00010000
+    599  f1d1		       f0		      .byte.b	%11110000
+    600  f1d2		       f0		      .byte.b	%11110000
+    601  f1d3		       00		      .byte.b	%00000000
+    602  f1d4		       00		      .byte.b	%00000000
+    603  f1d5		       00		      .byte.b	%00000000
+    604  f1d6		       00		      .byte.b	%00000000
+    605  f1d7		       00		      .byte.b	%00000000
+    606  f1d8
+    607  f1d8
+    608  f1d8							;    if >. != >[.+(PLAY_FIELD_LINES)]
+    609  f1d8							;	 align 256
+    610  f1d8							;    endif
+    611  f1d8
+    612  f1d8				   PF2DataA
+    613  f1d8		       00		      .byte.b	%00000000
+    614  f1d9		       00		      .byte.b	%00000000
+    615  f1da		       00		      .byte.b	%00000000
+    616  f1db		       00		      .byte.b	%00000000
+    617  f1dc		       00		      .byte.b	%00000000
+    618  f1dd		       00		      .byte.b	%00000000
+    619  f1de		       00		      .byte.b	%00000000
+    620  f1df		       00		      .byte.b	%00000000
+    621  f1e0		       00		      .byte.b	%00000000
+    622  f1e1		       00		      .byte.b	%00000000
+    623  f1e2		       00		      .byte.b	%00000000
+    624  f1e3		       00		      .byte.b	%00000000
+    625  f1e4		       00		      .byte.b	%00000000
+    626  f1e5		       00		      .byte.b	%00000000
+    627  f1e6		       00		      .byte.b	%00000000
+    628  f1e7		       00		      .byte.b	%00000000
+    629  f1e8		       00		      .byte.b	%00000000
+    630  f1e9		       00		      .byte.b	%00000000
+    631  f1ea		       00		      .byte.b	%00000000
+    632  f1eb		       00		      .byte.b	%00000000
+    633  f1ec		       00		      .byte.b	%00000000
+    634  f1ed		       00		      .byte.b	%00000000
+    635  f1ee		       00		      .byte.b	%00000000
+    636  f1ef		       00		      .byte.b	%00000000
+    637  f1f0		       00		      .byte.b	%00000000
+    638  f1f1		       00		      .byte.b	%00000000
+    639  f1f2		       00		      .byte.b	%00000000
+    640  f1f3		       00		      .byte.b	%00000000
+    641  f1f4		       00		      .byte.b	%00000000
+    642  f1f5		       00		      .byte.b	%00000000
+    643  f1f6		       00		      .byte.b	%00000000
+    644  f1f7		       00		      .byte.b	%00000000
+    645  f1f8		       00		      .byte.b	%00000000
+    646  f1f9		       00		      .byte.b	%00000000
+    647  f1fa		       00		      .byte.b	%00000000
+    648  f1fb		       00		      .byte.b	%00000000
+    649  f1fc		       00		      .byte.b	%00000000
+    650  f1fd		       00		      .byte.b	%00000000
+    651  f1fe		       00		      .byte.b	%00000000
+    652  f1ff		       00		      .byte.b	%00000000
+    653  f200		       00		      .byte.b	%00000000
+    654  f201		       00		      .byte.b	%00000000
+    655  f202		       00		      .byte.b	%00000000
+    656  f203		       00		      .byte.b	%00000000
+    657  f204		       00		      .byte.b	%00000000
+    658  f205		       00		      .byte.b	%00000000
+    659  f206		       00		      .byte.b	%00000000
+    660  f207		       00		      .byte.b	%00000000
+    661  f208		       00		      .byte.b	%00000000
+    662  f209		       00		      .byte.b	%00000000
+    663  f20a		       00		      .byte.b	%00000000
+    664  f20b		       00		      .byte.b	%00000000
+    665  f20c		       00		      .byte.b	%00000000
+    666  f20d		       00		      .byte.b	%00000000
+    667  f20e		       00		      .byte.b	%00000000
+    668  f20f		       00		      .byte.b	%00000000
+    669  f210		       00		      .byte.b	%00000000
+    670  f211		       00		      .byte.b	%00000000
+    671  f212		       00		      .byte.b	%00000000
+    672  f213		       00		      .byte.b	%00000000
+    673  f214		       00		      .byte.b	%00000000
+    674  f215		       00		      .byte.b	%00000000
+    675  f216		       00		      .byte.b	%00000000
+    676  f217		       00		      .byte.b	%00000000
+    677  f218		       00		      .byte.b	%00000000
+    678  f219		       00		      .byte.b	%00000000
+    679  f21a		       00		      .byte.b	%00000000
+    680  f21b		       00		      .byte.b	%00000000
+    681  f21c		       00		      .byte.b	%00000000
+    682  f21d		       00		      .byte.b	%00000000
+    683  f21e		       00		      .byte.b	%00000000
+    684  f21f		       00		      .byte.b	%00000000
+    685  f220		       00		      .byte.b	%00000000
+    686  f221		       00		      .byte.b	%00000000
+    687  f222		       00		      .byte.b	%00000000
+    688  f223		       00		      .byte.b	%00000000
+    689  f224		       00		      .byte.b	%00000000
+    690  f225		       00		      .byte.b	%00000000
+    691  f226		       00		      .byte.b	%00000000
+    692  f227		       00		      .byte.b	%00000000
+    693  f228		       00		      .byte.b	%00000000
+    694  f229		       00		      .byte.b	%00000000
+    695  f22a		       00		      .byte.b	%00000000
+    696  f22b		       00		      .byte.b	%00000000
+    697  f22c		       00		      .byte.b	%00000000
+    698  f22d		       00		      .byte.b	%00000000
+    699  f22e		       00		      .byte.b	%00000000
+    700  f22f		       00		      .byte.b	%00000000
+    701  f230		       00		      .byte.b	%00000000
+    702  f231		       00		      .byte.b	%00000000
+    703  f232
+    704  f232
+    705  f232							;    if >. != >[.+(PLAY_FIELD_LINES)]
+    706  f232							;	 align 256
+    707  f232							;    endif
+    708  f232
+    709  f232				   PFColors
+    710  f232		       0e		      .byte.b	$0E
+    711  f233		       0e		      .byte.b	$0E
+    712  f234		       0e		      .byte.b	$0E
+    713  f235		       0e		      .byte.b	$0E
+    714  f236		       0e		      .byte.b	$0E
+    715  f237		       0e		      .byte.b	$0E
+    716  f238		       0e		      .byte.b	$0E
+    717  f239		       0e		      .byte.b	$0E
+    718  f23a		       0e		      .byte.b	$0E
+    719  f23b		       0e		      .byte.b	$0E
+    720  f23c		       0e		      .byte.b	$0E
+    721  f23d		       0e		      .byte.b	$0E
+    722  f23e		       0e		      .byte.b	$0E
+    723  f23f		       0e		      .byte.b	$0E
+    724  f240		       0e		      .byte.b	$0E
+    725  f241		       0e		      .byte.b	$0E
+    726  f242		       0e		      .byte.b	$0E
+    727  f243		       0e		      .byte.b	$0E
+    728  f244		       0e		      .byte.b	$0E
+    729  f245		       0e		      .byte.b	$0E
+    730  f246		       0e		      .byte.b	$0E
+    731  f247		       0e		      .byte.b	$0E
+    732  f248		       0e		      .byte.b	$0E
+    733  f249		       0e		      .byte.b	$0E
+    734  f24a		       0e		      .byte.b	$0E
+    735  f24b		       0e		      .byte.b	$0E
+    736  f24c		       0e		      .byte.b	$0E
+    737  f24d		       0e		      .byte.b	$0E
+    738  f24e		       0e		      .byte.b	$0E
+    739  f24f		       0e		      .byte.b	$0E
+    740  f250		       0e		      .byte.b	$0E
+    741  f251		       0e		      .byte.b	$0E
+    742  f252		       0e		      .byte.b	$0E
+    743  f253		       0e		      .byte.b	$0E
+    744  f254		       0e		      .byte.b	$0E
+    745  f255		       0e		      .byte.b	$0E
+    746  f256		       0e		      .byte.b	$0E
+    747  f257		       0e		      .byte.b	$0E
+    748  f258		       0e		      .byte.b	$0E
+    749  f259		       0e		      .byte.b	$0E
+    750  f25a		       0e		      .byte.b	$0E
+    751  f25b		       0e		      .byte.b	$0E
+    752  f25c		       0e		      .byte.b	$0E
+    753  f25d		       0e		      .byte.b	$0E
+    754  f25e		       0e		      .byte.b	$0E
+    755  f25f		       0e		      .byte.b	$0E
+    756  f260		       0e		      .byte.b	$0E
+    757  f261		       0e		      .byte.b	$0E
+    758  f262		       0e		      .byte.b	$0E
+    759  f263		       0e		      .byte.b	$0E
+    760  f264		       0e		      .byte.b	$0E
+    761  f265		       0e		      .byte.b	$0E
+    762  f266		       0e		      .byte.b	$0E
+    763  f267		       0e		      .byte.b	$0E
+    764  f268		       0e		      .byte.b	$0E
+    765  f269		       0e		      .byte.b	$0E
+    766  f26a		       0e		      .byte.b	$0E
+    767  f26b		       0e		      .byte.b	$0E
+    768  f26c		       0e		      .byte.b	$0E
+    769  f26d		       0e		      .byte.b	$0E
+    770  f26e		       0e		      .byte.b	$0E
+    771  f26f		       0e		      .byte.b	$0E
+    772  f270		       0e		      .byte.b	$0E
+    773  f271		       0e		      .byte.b	$0E
+    774  f272		       0e		      .byte.b	$0E
+    775  f273		       0e		      .byte.b	$0E
+    776  f274		       0e		      .byte.b	$0E
+    777  f275		       0e		      .byte.b	$0E
+    778  f276		       0e		      .byte.b	$0E
+    779  f277		       0e		      .byte.b	$0E
+    780  f278		       0e		      .byte.b	$0E
+    781  f279		       0e		      .byte.b	$0E
+    782  f27a		       0e		      .byte.b	$0E
+    783  f27b		       0e		      .byte.b	$0E
+    784  f27c		       0e		      .byte.b	$0E
+    785  f27d		       0e		      .byte.b	$0E
+    786  f27e		       0e		      .byte.b	$0E
+    787  f27f		       0e		      .byte.b	$0E
+    788  f280		       0e		      .byte.b	$0E
+    789  f281		       0e		      .byte.b	$0E
+    790  f282		       0e		      .byte.b	$0E
+    791  f283		       0e		      .byte.b	$0E
+    792  f284		       0e		      .byte.b	$0E
+    793  f285		       0e		      .byte.b	$0E
+    794  f286		       0e		      .byte.b	$0E
+    795  f287		       0e		      .byte.b	$0E
+    796  f288		       0e		      .byte.b	$0E
+    797  f289		       0e		      .byte.b	$0E
+    798  f28a		       0e		      .byte.b	$0E
+    799  f28b		       0e		      .byte.b	$0E
+    800  f28c
+    801  f28c
+    802  f28c				   KyleSprite
+    803  f28c		       00		      .byte.b	#%00000000	;
+    804  f28d		       0f		      .byte.b	#%00001111	; #####  
+    805  f28e		       0f		      .byte.b	#%00001111	; #####
+    806  f28f		       0f		      .byte.b	#%00001111	; #####
+    807  f290		       0f		      .byte.b	#%00001111	; #####
+    808  f291		       0f		      .byte.b	#%00001111	; #####
+    809  f292		       0f		      .byte.b	#%00001111	; ##### 
+    810  f293		       0f		      .byte.b	#%00001111	; #####   
+    811  f294		       0f		      .byte.b	#%00001111	; #####   
+    812  f295
+    813  f295				   KyleColor
+    814  f295		       00		      .byte.b	#$00
+    815  f296		       0e		      .byte.b	#$0E
+    816  f297		       0e		      .byte.b	#$0E
+    817  f298		       0e		      .byte.b	#$0E
+    818  f299		       0e		      .byte.b	#$0E
+    819  f29a		       0e		      .byte.b	#$0E
+    820  f29b		       0e		      .byte.b	#$0E
+    821  f29c		       0e		      .byte.b	#$0E
+    822  f29d		       0e		      .byte.b	#$0E
+    823  f29e
+    824  f29e
+    825  f29e
+    826  f29e							; complete ROM size with exactly 4KB
+    827  f29e
+    828  fffc					      org	$FFFC	; move to position $FFFC
+    829  fffc		       00 f0		      word.w	Reset	; write 2 bytes with the program reset address
+    830  fffe		       00 f0		      word.w	Reset	; write 2 bytes with the interruption vector
+    831  10000
+    832  10000
+    833  10000
+    834  10000

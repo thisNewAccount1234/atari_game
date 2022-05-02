@@ -1,19 +1,8 @@
 --- Symbol List (sorted by symbol)
-<<<<<<< Updated upstream
-0.DrawSpriteP0           f066              (R )
+0.DrawSpriteP0           f07a              (R )
 0.FREE_BYTES             0000                  
-0.GameLineLoop           f05c              (R )
-0.InsideKyleSprite       f05c                  
-0.OverScanLoop           f085              (R )
-0.VBlankLoop             f039              (R )
-=======
-0.DrawSpriteP0           f04c              (R )
-0.FREE_BYTES             0000                  
-0.GameLineLoop           f042              (R )
-0.InsideKyleSprite       f042                  
-0.OverScanLoop           f06b              (R )
+0.InsideKyleSprite       f070                  
 0.VBlankLoop             f035              (R )
->>>>>>> Stashed changes
 1.CLEAR_STACK            f006              (R )
 AUDC0                    0015                  
 AUDC1                    0016                  
@@ -21,21 +10,13 @@ AUDF0                    0017
 AUDF1                    0018                  
 AUDV0                    0019                  
 AUDV1                    001a                  
-<<<<<<< Updated upstream
-BUILDING_HEIGHT          0012                  
-CheckP0Down              f0ad              (R )
-CheckP0Left              f0be              (R )
-CheckP0Right             f0cf              (R )
-CheckP0Up                f09c                  
-=======
-CheckP0Down              f081              (R )
-CheckP0Up                f074                  
->>>>>>> Stashed changes
-COLUBK                   0009              (R )
+CheckP0Down              f114              (R )
+CheckP0Up                f107                  
+COLUBK                   0009                  
 COLUP0                   0006              (R )
 COLUP1                   0007                  
-COLUPF                   0008                  
-CTRLPF                   000a                  
+COLUPF                   0008              (R )
+CTRLPF                   000a              (R )
 CXBLPF                   0006                  
 CXCLR                    002c                  
 CXM0FB                   0004                  
@@ -45,20 +26,10 @@ CXM1P                    0001
 CXP0FB                   0002                  
 CXP1FB                   0003                  
 CXPPMM                   0007                  
-<<<<<<< Updated upstream
-DivideLoop               f0e9              (R )
 ENABL                    001f                  
 ENAM0                    001d                  
 ENAM1                    001e                  
-EndInputCheck            f0e0              (R )
-GameVisibleLine          f040                  
-=======
-ENABL                    001f                  
-ENAM0                    001d                  
-ENAM1                    001e                  
-EndInputCheck            f08e              (R )
-GameVisibleLine          f03c                  
->>>>>>> Stashed changes
+EndInputCheck            f121              (R )
 GRP0                     001b              (R )
 GRP1                     001c                  
 HMBL                     0024                  
@@ -76,29 +47,23 @@ INPT4                    000c
 INPT5                    000d                  
 INTIM                    0284                  
 KYLE_HEIGHT              0009              (R )
-<<<<<<< Updated upstream
-KyleColor                f107              (R )
+KyleColor                f295              (R )
 KyleColorPtr             0084              (R )
 KyleOffset               0086              (R )
-KyleSprite               f0fe              (R )
+KyleSprite               f28c              (R )
 KyleSpritePtr            0082              (R )
 KyleXPos                 0080              (R )
 KyleYPos                 0081              (R )
-NoPlayFieldCollision     f09a              (R )
-=======
-KyleColor                f09a              (R )
-KyleColorPtr             0084              (R )
-KyleOffset               0086              (R )
-KyleSprite               f091              (R )
-KyleSpritePtr            0082              (R )
-KyleXPos                 0080              (R )
-KyleYPos                 0081              (R )
->>>>>>> Stashed changes
 NUSIZ0                   0004                  
 NUSIZ1                   0005                  
-PF0                      000d                  
-PF1                      000e                  
-PF2                      000f                  
+PF0                      000d              (R )
+PF0DataA                 f124              (R )
+PF1                      000e              (R )
+PF1DataA                 f17e              (R )
+PF2                      000f              (R )
+PF2DataA                 f1d8              (R )
+PFColors                 f232              (R )
+PlayfieldLoop            f05a              (R )
 REFP0                    000b                  
 REFP1                    000c                  
 RESBL                    0014                  
@@ -116,10 +81,6 @@ SWBCNT                   0283
 SWCHA                    0280              (R )
 SWCHB                    0282                  
 T1024T                   0297                  
-<<<<<<< Updated upstream
-TestCollisions           f08e                  
-=======
->>>>>>> Stashed changes
 TIA_BASE_ADDRESS         0000              (R )
 TIA_BASE_READ_ADDRESS    0000              (R )
 TIA_BASE_WRITE_ADDRESS   0000              (R )
