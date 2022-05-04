@@ -1,43 +1,49 @@
 --- Symbol List (sorted by symbol)
-0.DrawSpriteP0           f07a              (R )
+0.CollisionP0PF          f155              (R )
+0.DrawSpriteP0           f085              (R )
 0.FREE_BYTES             0000                  
-0.InsideKyleSprite       f070                  
-0.VBlankLoop             f035              (R )
+0.InsideKyleSprite       f07b                  
+0.VBlankLoop             f040              (R )
 1.CLEAR_STACK            f006              (R )
+2.Div15Loop              f15d              (R )
 AUDC0                    0015                  
 AUDC1                    0016                  
 AUDF0                    0017                  
 AUDF1                    0018                  
 AUDV0                    0019                  
 AUDV1                    001a                  
-CheckP0Down              f114              (R )
-CheckP0Up                f107                  
+CheckCollisionP0PF       f14c                  
+CheckP0Down              f125              (R )
+CheckP0Left              f132              (R )
+CheckP0Right             f13f              (R )
+CheckP0Up                f118                  
 COLUBK                   0009                  
 COLUP0                   0006              (R )
 COLUP1                   0007                  
 COLUPF                   0008              (R )
 CTRLPF                   000a              (R )
 CXBLPF                   0006                  
-CXCLR                    002c                  
+CXCLR                    002c              (R )
 CXM0FB                   0004                  
 CXM0P                    0000                  
 CXM1FB                   0005                  
 CXM1P                    0001                  
-CXP0FB                   0002                  
+CXP0FB                   0002              (R )
 CXP1FB                   0003                  
 CXPPMM                   0007                  
 ENABL                    001f                  
 ENAM0                    001d                  
 ENAM1                    001e                  
-EndInputCheck            f121              (R )
+EndCollisionCheck        f155              (R )
+EndInputCheck            f14c              (R )
 GRP0                     001b              (R )
 GRP1                     001c                  
 HMBL                     0024                  
 HMCLR                    002b                  
 HMM0                     0022                  
 HMM1                     0023                  
-HMOVE                    002a                  
-HMP0                     0020                  
+HMOVE                    002a              (R )
+HMP0                     0020              (R )
 HMP1                     0021                  
 INPT0                    0008                  
 INPT1                    0009                  
@@ -47,23 +53,23 @@ INPT4                    000c
 INPT5                    000d                  
 INTIM                    0284                  
 KYLE_HEIGHT              0009              (R )
-KyleColor                f295              (R )
+KyleColor                f2df              (R )
 KyleColorPtr             0084              (R )
 KyleOffset               0086              (R )
-KyleSprite               f28c              (R )
+KyleSprite               f2d6              (R )
 KyleSpritePtr            0082              (R )
 KyleXPos                 0080              (R )
 KyleYPos                 0081              (R )
 NUSIZ0                   0004                  
 NUSIZ1                   0005                  
 PF0                      000d              (R )
-PF0DataA                 f124              (R )
+PF0DataA                 f16e              (R )
 PF1                      000e              (R )
-PF1DataA                 f17e              (R )
+PF1DataA                 f1c8              (R )
 PF2                      000f              (R )
-PF2DataA                 f1d8              (R )
-PFColors                 f232              (R )
-PlayfieldLoop            f05a              (R )
+PF2DataA                 f222              (R )
+PFColors                 f27c              (R )
+PlayfieldLoop            f065              (R )
 REFP0                    000b                  
 REFP1                    000c                  
 RESBL                    0014                  
@@ -72,9 +78,10 @@ RESM0                    0012
 RESM1                    0013                  
 RESMP0                   0028                  
 RESMP1                   0029                  
-RESP0                    0010                  
+RESP0                    0010              (R )
 RESP1                    0011                  
 RSYNC                    0003                  
+SetObjectXPos            f15a              (R )
 StartFrame               f023              (R )
 SWACNT                   0281                  
 SWBCNT                   0283                  
