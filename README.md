@@ -1,20 +1,6 @@
 # Atari Game
 Repository for Atari 2600 game.
 
-## Possible Game Names
-
-The Knsh. Kid
-
-The Knsh. Kid: R. vs. A.
-
-K. R.
-
-R.
-
-St. R.
-
-St. R. of K.
-
 ## Game Description
 Save the city!
 
